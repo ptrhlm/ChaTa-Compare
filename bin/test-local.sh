@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+# Exit in case of error
+set -e
+
+if [ $(uname -s) = "Linux" ]; then
+    echo "Remove __pycache__ files"
+    find .. -type d -name __pycache__ -exec rm -r {} \+
+fi
+
+docker-compose \
+  -f ./docker/test.yml \
+  -f ./docker/shared/admin.yml \
+  -f ./docker/shared/base-images.yml \
+  -f ./docker/shared/depends.yml \
+  -f ./docker/shared/env.yml \
+  -f ./docker/dev/build.yml \
+  -f ./docker/dev/env.yml \
+  -f ./docker/dev/labels.yml \
+  -f ./docker/dev/networks.yml \
+  -f ./docker/dev/ports.yml \
+  -f ./docker/dev/volumes.yml \
+  config > docker-stack.yml
+
+docker-compose -f docker-stack.yml build
+docker-compose -f docker-stack.yml down -v --remove-orphans # Remove possibly previous broken stacks left hanging after an error
+docker-compose -f docker-stack.yml up -d
+docker-compose -f docker-stack.yml exec -T backend-tests /tests-start.sh
