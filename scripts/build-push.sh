@@ -1,10 +1,10 @@
-#!/usr/bin/env sh
+#! /usr/bin/env sh
 
 # Exit in case of error
 set -e
 
-# TAG=${TAG} \
+TAG=${TAG} \
 FRONTEND_ENV=${FRONTEND_ENV-production} \
-source ./bin/build.sh
+source ./scripts/build.sh
 
 docker-compose -f docker-stack.yml push
