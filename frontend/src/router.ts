@@ -115,6 +115,12 @@ export default new Router({
                   component: () => import(
                       /* webpackChunkName: "main-surveys-task" */ './views/main/survey/SurveyTask.vue'),
                 },
+                {
+                  path: 'create',
+                  name: 'main-surveys-create',
+                  component: () => import(
+                      /* webpackChunkName: "main-surveys-create" */ './views/main/survey/CreateSurvey.vue'),
+                },
               ],
             },
           ],

@@ -154,7 +154,7 @@ export default class Main extends Vue {
   public appName = appName;
   public navigationItems = [
     {icon: "thumbs_up_down", text: "Trwające badania", toPath: "/main/surveys/current"},
-    {icon: "add_circle_outlined", text: "Stwórz badanie", toPath: "/main"},
+    {icon: "add_circle_outlined", text: "Stwórz badanie", toPath: "/main/surveys/create"},
     {icon: "insert_chart_outlined", text: "Moje badania", toPath: "/main/surveys/my"},
   ];
 

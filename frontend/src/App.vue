@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <v-app>
+    <v-app dark>
       <v-content v-if="loggedIn===null">
         <v-container fill-height>
           <v-layout align-center justify-center>

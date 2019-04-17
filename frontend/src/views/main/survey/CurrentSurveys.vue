@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-toolbar light>
+        <v-toolbar >
             <v-toolbar-title>
                 Trwające badania
             </v-toolbar-title>

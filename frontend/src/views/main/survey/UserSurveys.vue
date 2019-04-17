@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-toolbar light>
+        <v-toolbar>
             <v-toolbar-title>
                 Moje badania
             </v-toolbar-title>
