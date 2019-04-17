@@ -86,6 +86,37 @@ export default new Router({
                 },
               ],
             },
+            {
+              path: 'surveys',
+              component: RouterComponent,
+              redirect: 'surveys/my',
+              children: [
+                {
+                  path: 'my',
+                  name: 'main-surveys-my',
+                  component: () => import(
+                      /* webpackChunkName: "main-surveys-my" */ './views/main/survey/UserSurveys.vue'),
+                },
+                {
+                  path: 'current',
+                  name: 'main-surveys-current',
+                  component: () => import(
+                      /* webpackChunkName: "main-surveys-current" */ './views/main/survey/CurrentSurveys.vue'),
+                },
+                {
+                  path: ':id/details',
+                  name: 'main-surveys-details',
+                  component: () => import(
+                      /* webpackChunkName: "main-surveys-details" */ './views/main/survey/SurveyDetails.vue'),
+                },
+                {
+                  path: ':id/task',
+                  name: 'main-surveys-task',
+                  component: () => import(
+                      /* webpackChunkName: "main-surveys-task" */ './views/main/survey/SurveyTask.vue'),
+                },
+              ],
+            },
           ],
         },
       ],

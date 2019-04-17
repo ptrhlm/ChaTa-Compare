@@ -12,6 +12,22 @@
               <v-list-tile-title>Dashboard</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
+        </v-list>
+        <v-divider></v-divider>
+        <v-list>
+          <v-subheader>Charts</v-subheader>
+          <v-list-tile v-for="navItem in navigationItems" :key="navItem.text" :to="navItem.toPath">
+            <v-list-tile-action>
+              <v-icon>{{ navItem.icon }}</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>{{ navItem.text }}</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+        </v-list>
+        <v-divider></v-divider>
+        <v-list>
+          <v-subheader>User</v-subheader>
           <v-list-tile to="/main/profile/view">
             <v-list-tile-action>
               <v-icon>person</v-icon>
@@ -136,6 +152,11 @@ const routeGuardMain = async (to, from, next) => {
 @Component
 export default class Main extends Vue {
   public appName = appName;
+  public navigationItems = [
+    {icon: "thumbs_up_down", text: "Trwające badania", toPath: "/main/surveys/current"},
+    {icon: "add_circle_outlined", text: "Stwórz badanie", toPath: "/main"},
+    {icon: "insert_chart_outlined", text: "Moje badania", toPath: "/main/surveys/my"},
+  ];
 
   public beforeRouteEnter(to, from, next) {
     routeGuardMain(to, from, next);
