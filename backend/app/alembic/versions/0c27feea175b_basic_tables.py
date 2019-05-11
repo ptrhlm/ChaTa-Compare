@@ -146,6 +146,8 @@ def downgrade():
     op.drop_index(op.f('ix_survey_name'), table_name='survey')
     op.drop_index(op.f('ix_survey_id'), table_name='survey')
     op.drop_table('survey')
+    op.execute("DROP TYPE surveytype;")
+    op.execute("DROP TYPE surveystatus;")
     op.drop_index(op.f('ix_chart_y_axis_title'), table_name='chart')
     op.drop_index(op.f('ix_chart_x_axis_title'), table_name='chart')
     op.drop_index(op.f('ix_chart_type'), table_name='chart')
@@ -153,4 +155,5 @@ def downgrade():
     op.drop_index(op.f('ix_chart_id'), table_name='chart')
     op.drop_index(op.f('ix_chart_description'), table_name='chart')
     op.drop_table('chart')
+    op.execute("DROP TYPE charttype;")
     # ### end Alembic commands ###
