@@ -34,6 +34,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
   flower:
+    depends_on:
+      - queue
     image: totem/celery-flower-docker
     env_file:
       - env-flower.env

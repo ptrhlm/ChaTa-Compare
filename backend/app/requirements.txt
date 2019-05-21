@@ -1,4 +1,4 @@
-fastapi
+fastapi>=0.7.1
 uvicorn
 pyjwt
 python-multipart
