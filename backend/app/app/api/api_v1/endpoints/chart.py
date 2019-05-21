@@ -7,7 +7,7 @@ from fastapi import Depends, File, UploadFile, Path
 
 from app.api.api_v1.endpoints.token import router
 from app.api.utils.db import get_db
-from app.api.utils.security import get_current_active_superuser
+from app.api.utils.security import get_current_active_superuser, get_current_active_user
 from app.core import config
 from app.db.session import Session
 from app.models.chart import ChartInCreate
@@ -17,7 +17,6 @@ from app.models.chart import ChartBase
 
 from app import crud
 
-from app.enums.chart_type import ChartType
 import ujson
 
 import os
@@ -27,14 +26,17 @@ from starlette.responses import FileResponse
 
 from app.api.utils.security import get_current_user
 
+from app.models.chart import ChartType
+
 
 @router.get("/charts/{chart_id}", tags=["charts"])
 async def get_chart(
         *,
         chart_id: int = Path(..., title="The ID of the chart to get"),
         db: Session = Depends(get_db),
-        current_user: DBUser = Depends(get_current_user),
+        current_user: DBUser = Depends(get_current_active_user),
 ):
+    """Get one chart"""
     chart = crud.chart.get(db, chart_id=chart_id)
     if not chart:
         raise HTTPException(
@@ -50,6 +52,7 @@ def search_charts(
         q: str = None,
         current_user: DBUser = Depends(get_current_active_superuser),
 ):
+    """Search charts"""
     charts = crud.chart.search(db, q=q)
     return [chart.id for chart in charts]
 
@@ -61,6 +64,7 @@ async def create_charts(
         files: List[UploadFile] = File(...),
         current_user: DBUser = Depends(get_current_active_superuser),
 ):
+    """Create multiple charts and store their images"""
     logging.info('Saving charts - start')
     if not current_user:
         raise HTTPException(
@@ -72,7 +76,7 @@ async def create_charts(
     json_content = await charts_json_file.read()
     parsed_json = ujson.loads(json_content)
     for chart in parsed_json:
-        chart['type'] = ChartType[str(chart['type']).upper()]
+        chart['type'] = ChartType(str(chart['type']).lower())
 
     logging.info('Saving charts')
 
@@ -93,3 +97,13 @@ async def create_charts(
                                       description=chart.description)
     created_charts = crud.chart.create(db, charts_in=charts_in_db)
     return [chart.id for chart in created_charts]
+
+
+@router.delete("/charts/{id}", tags=["charts"])
+async def delete_chart(
+        id: int,
+        db: Session = Depends(get_db),
+        current_user: DBUser = Depends(get_current_active_user)
+):
+    """Remove chart if not used in any survey"""
+    raise NotImplementedError()  # TODO
