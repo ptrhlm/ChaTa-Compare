@@ -1,6 +1,7 @@
 from app.db.base_class import Base
 from app.enums.chart_type import ChartType
 from sqlalchemy import Column, Integer, String, Enum
+from sqlalchemy_utils import TSVectorType
 
 
 class Chart(Base):
@@ -11,3 +12,4 @@ class Chart(Base):
     x_axis_title = Column(String(200), index=True)
     y_axis_title = Column(String(200), index=True)
     description = Column(String(4000), index=True)
+    search_vector = Column(TSVectorType('title', 'x_axis_title', 'y_axis_title', 'description'))
