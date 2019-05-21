@@ -1,6 +1,5 @@
 from app.db.base_class import Base
-from app.enums.survey_status import SurveyStatus
-from app.enums.survey_type import SurveyType
+from app.models.survey import SurveyType, SurveyStatus
 from sqlalchemy import Boolean, Column, Integer, String, Enum, Float, ForeignKey
 from sqlalchemy.orm import relationship
 

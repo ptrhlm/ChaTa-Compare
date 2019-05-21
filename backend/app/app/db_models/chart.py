@@ -1,5 +1,5 @@
 from app.db.base_class import Base
-from app.enums.chart_type import ChartType
+from app.models.chart import ChartType
 from sqlalchemy import Column, Integer, String, Enum
 from sqlalchemy_utils import TSVectorType
 

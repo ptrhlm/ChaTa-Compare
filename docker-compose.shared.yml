@@ -1,0 +1,52 @@
+version: '3.3'
+
+services:
+  backend:
+    depends_on: 
+      - db
+      - queue
+    env_file:
+      - env-postgres.env
+      - env-backend.env
+    environment:
+      - SERVER_NAME=${DOMAIN}
+      - SERVER_HOST=https://${DOMAIN}
+
+  celeryworker:
+    depends_on: 
+      - db
+      - queue
+    env_file:
+      - env-postgres.env
+      - env-backend.env
+    environment:
+      - SERVER_HOST=https://${DOMAIN}
+
+  pgadmin:
+    image: dpage/pgadmin4
+    depends_on:
+      - db
+    env_file:
+      - env-pgadmin.env
+
+  proxy:
+    image: traefik:v1.7
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  flower:
+    depends_on:
+      - queue
+    image: totem/celery-flower-docker
+    env_file:
+      - env-flower.env
+
+  db:
+    image: postgres:11
+    env_file:
+      - env-postgres.env
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+
+  queue:
+    image: rabbitmq:3

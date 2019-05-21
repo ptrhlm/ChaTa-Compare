@@ -1,0 +1,17 @@
+fastapi>=0.7.1
+uvicorn
+pyjwt
+python-multipart
+email-validator
+requests
+celery==4.2.1
+passlib[bcrypt]
+tenacity
+pydantic
+emails
+raven
+gunicorn
+jinja2
+psycopg2-binary
+alembic
+sqlalchemy
