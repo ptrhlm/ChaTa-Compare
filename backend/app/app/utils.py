@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Union
 
 import emails
 import jwt
@@ -44,15 +44,18 @@ def send_test_email(email_to: str):
     )
 
 
-def send_reset_password_email(email_to: str, email: str, token: str):
+def send_reset_password_email(email_to: str, email: str, token: Union[str, bytes]):
     project_name = config.PROJECT_NAME
     subject = f"{project_name} - Password recovery for user {email}"
     with open(Path(config.EMAIL_TEMPLATES_DIR) / "reset_password.html") as f:
         template_str = f.read()
-    if hasattr(token, "decode"):
-        use_token = token.decode()
-    else:
+
+    use_token: str
+    if isinstance(token, str):
         use_token = token
+    else:
+        use_token = token.decode()
+
     server_host = config.SERVER_HOST
     link = f"{server_host}/reset-password?token={use_token}"
     send_email(

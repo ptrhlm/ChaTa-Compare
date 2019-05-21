@@ -11,9 +11,9 @@ services:
     environment:
       - 'JUPYTER=jupyter notebook --ip=0.0.0.0 --allow-root'
     labels:
-      - traefik.frontend.rule=PathPrefix:/api,/docs,/redoc
-      - traefik.enable=true
-      - traefik.port=80
+      - 'traefik.frontend.rule=PathPrefix:/api,/docs,/redoc'
+      - 'traefik.enable=true'
+      - 'traefik.port=80'
       - traefik.tags=${TRAEFIK_TAG}
       - SERVER_HOST=http://${DOMAIN}
     networks: 
@@ -21,7 +21,7 @@ services:
         aliases: 
           - ${DOMAIN}
     ports:
-      - '8888:8888'
+      - '8888:80'
     volumes:
       - ./backend/app:/app
 

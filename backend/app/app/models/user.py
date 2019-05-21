@@ -12,7 +12,7 @@ class UserBase(BaseModel):
 
 
 class UserBaseInDB(UserBase):
-    id: int = None
+    id: Optional[int] = None
 
 
 # Properties to receive via API on creation

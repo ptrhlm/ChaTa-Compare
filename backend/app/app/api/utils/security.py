@@ -1,7 +1,7 @@
 import jwt
 from fastapi import Depends, HTTPException, Security
 from fastapi.security import OAuth2PasswordBearer
-from jwt import PyJWTError
+from jwt import PyJWTError  # type: ignore
 from sqlalchemy.orm import Session
 from starlette.status import HTTP_403_FORBIDDEN
 
@@ -21,7 +21,9 @@ def get_current_user(
     try:
         payload = jwt.decode(token, config.SECRET_KEY, algorithms=[ALGORITHM])
         token_data = TokenPayload(**payload)
-    except PyJWTError:
+        if token_data.user_id is None:
+            raise RuntimeError()
+    except (PyJWTError, RuntimeError):
         raise HTTPException(
             status_code=HTTP_403_FORBIDDEN, detail="Could not validate credentials"
         )
