@@ -13,7 +13,7 @@ export const getters = {
     dashboardMiniDrawer: (state: MainState) => state.dashboardMiniDrawer,
     userProfile: (state: MainState) => state.userProfile,
     token: (state: MainState) => state.token,
-    isLoggedIn: (state: MainState) => true,
+    isLoggedIn: (state: MainState) => state.isLoggedIn,
     firstNotification: (state: MainState) => state.notifications.length > 0 && state.notifications[0],
 };
 
