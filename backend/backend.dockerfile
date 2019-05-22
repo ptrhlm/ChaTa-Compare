@@ -1,17 +1,18 @@
 FROM tiangolo/uvicorn-gunicorn-fastapi:python3.6
 
-RUN pip install celery==4.2.1 passlib[bcrypt] tenacity requests emails "fastapi>=0.7.1" uvicorn gunicorn pyjwt python-multipart email_validator jinja2 psycopg2-binary alembic SQLAlchemy sqlalchemy-searchable aiofiles ujson
-
-# For development, Jupyter remote kernel, Hydrogen
-# Using inside the container:
-# jupyter notebook --ip=0.0.0.0 --allow-root
-ARG env=prod
-RUN bash -c "if [ $env == 'dev' ] ; then pip install jupyter ; fi"
+ENV PYTHONPATH=/app
+EXPOSE 80
 EXPOSE 8888
+
+COPY ./app/requirements.txt /tmp
+RUN pip install -r /tmp/requirements.txt && \
+    rm /tmp/requirements.txt
+
+ARG env=prod
+
+COPY ./app/requirements.dev.txt /tmp
+RUN bash -c "if [ $env == 'dev' ] ; then pip install -r /tmp/requirements.dev.txt ; fi" && \
+    rm /tmp/requirements.dev.txt
 
 COPY ./app /app
 WORKDIR /app/
-
-ENV PYTHONPATH=/app
-
-EXPOSE 80
