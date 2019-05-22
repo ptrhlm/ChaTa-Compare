@@ -1,8 +1,8 @@
 # ChaTa-Compare
-> Part of [ChaTa project](chata-url): App for creating plot comparison surveys
+> Part of [ChaTa project][chata-url]: App for creating plot comparison surveys
 
-[![Maintainability](codeclimate-maint-image)](codeclimate-maint-url)
-[![Test Coverage](codeclimate-cov-image)](codeclimate-cov-url)
+[![Maintainability][codeclimate-maint-image]][codeclimate-maint-url]
+[![Test Coverage][codeclimate-cov-image]][codeclimate-cov-url]
 
 ## Requirements
 
