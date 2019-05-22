@@ -24,6 +24,7 @@ services:
       - '8888:80'
     volumes:
       - ./backend/app:/app
+      - ./data:/data
 
   celeryworker:
     build:
@@ -37,6 +38,7 @@ services:
       - SERVER_HOST=http://${DOMAIN}
     volumes:
       - ./backend/app:/app
+      - ./data:/data
 
   backend-tests:
     build:
@@ -48,6 +50,7 @@ services:
       - JUPYTER=jupyter notebook --ip=0.0.0.0 --allow-root
     volumes:
       - ./backend/app:/app
+      - ./data:/data
 
   frontend:
     build: 

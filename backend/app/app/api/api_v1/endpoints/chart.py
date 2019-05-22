@@ -1,32 +1,22 @@
+import logging
+import os
 from typing import List
 
-import logging
-
 import aiofiles
-from fastapi import Depends, File, UploadFile, Path
-
-from app.api.api_v1.endpoints.token import router
-from app.api.utils.db import get_db
-from app.api.utils.security import get_current_active_superuser, get_current_active_user
-from app.core import config
-from app.db.session import Session
-from app.models.chart import ChartInCreate
-from app.db_models.user import User as DBUser
-
-from app.models.chart import ChartBase
-
-from app import crud
-
 import ujson
-
-import os
-
-from app.db_models.chart import Chart
+from fastapi import Depends, File, HTTPException, Path, UploadFile
 from starlette.responses import FileResponse
 
-from app.api.utils.security import get_current_user
-
-from app.models.chart import ChartType
+from app import crud
+from app.api.api_v1.endpoints.token import router
+from app.api.utils.db import get_db
+from app.api.utils.security import (get_current_active_superuser,
+                                    get_current_active_user)
+from app.core import config
+from app.db.session import Session
+from app.db_models.chart import Chart
+from app.db_models.user import User as DBUser
+from app.models.chart import ChartBase, ChartInCreate, ChartType
 
 
 @router.get("/charts/{chart_id}", tags=["charts"])
