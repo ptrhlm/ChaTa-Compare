@@ -15,18 +15,16 @@ from app.models.token import TokenPayload
 reusable_oauth2 = OAuth2PasswordBearer(tokenUrl="/api/v1/login/access-token")
 
 
-def get_current_user(
-    db: Session = Depends(get_db), token: str = Security(reusable_oauth2)
-):
+def get_current_user(db: Session = Depends(get_db),
+                     token: str = Security(reusable_oauth2)):
     try:
         payload = jwt.decode(token, config.SECRET_KEY, algorithms=[ALGORITHM])
         token_data = TokenPayload(**payload)
         if token_data.user_id is None:
             raise RuntimeError()
     except (PyJWTError, RuntimeError):
-        raise HTTPException(
-            status_code=HTTP_403_FORBIDDEN, detail="Could not validate credentials"
-        )
+        raise HTTPException(status_code=HTTP_403_FORBIDDEN,
+                            detail="Could not validate credentials")
     user = crud.user.get(db, user_id=token_data.user_id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -39,9 +37,19 @@ def get_current_active_user(current_user: User = Security(get_current_user)):
     return current_user
 
 
-def get_current_active_superuser(current_user: User = Security(get_current_user)):
+def get_current_active_superuser(
+        current_user: User = Security(get_current_user)):
     if not crud.user.is_superuser(current_user):
-        raise HTTPException(
-            status_code=400, detail="The user doesn't have enough privileges"
-        )
+        raise HTTPException(status_code=400,
+                            detail="The user doesn't have enough privileges")
+    return current_user
+
+
+def get_current_active_researcher(
+        current_user: User = Security(get_current_user)):
+    if not crud.user.is_active(current_user):
+        raise HTTPException(status_code=400, detail="Inactive user")
+    elif not crud.user.is_researcher(current_user):
+        raise HTTPException(status_code=400,
+                            detail="User is not a researcher.")
     return current_user

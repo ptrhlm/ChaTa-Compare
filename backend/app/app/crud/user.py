@@ -32,6 +32,10 @@ def is_superuser(user) -> bool:
     return user.is_superuser
 
 
+def is_researcher(user) -> bool:
+    raise NotImplementedError()  # TODO
+
+
 def get_multi(db_session, *, skip=0, limit=100) -> List[Optional[User]]:
     return db_session.query(User).offset(skip).limit(limit).all()
 
