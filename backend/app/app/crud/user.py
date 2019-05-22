@@ -33,7 +33,7 @@ def is_superuser(user) -> bool:
 
 
 def is_researcher(user) -> bool:
-    raise NotImplementedError()  # TODO
+    return user.is_researcher
 
 
 def get_multi(db_session, *, skip=0, limit=100) -> List[Optional[User]]:
