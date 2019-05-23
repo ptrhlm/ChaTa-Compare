@@ -88,8 +88,8 @@
 
         public closeSurvey(surveyId: number): void {
             const survey = this.surveys.find(value => value.id === surveyId);
-            survey.endDate = new Date().toISOString().slice(0, 10);
-            survey.closed = true;
+            survey!.endDate = new Date().toISOString().slice(0, 10);
+            survey!.closed = true;
         }
     }
 </script>
