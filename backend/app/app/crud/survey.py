@@ -1,6 +1,7 @@
 from typing import Any, List, Optional
 
 from app.db_models.survey import Survey
+from app.db_models.task import Task
 from app.db_models.user import User
 from app.models.survey import CreateSurvey
 
@@ -53,3 +54,30 @@ def add_participants(db_session, *, survey: Survey,
 def remove_participants(db_session, *, survey: Survey,
                         participant_ids: List[int]) -> List[Optional[Any]]:
     raise NotImplementedError()  # TODO
+
+
+def is_participant(db_session, *, survey_id: int, user: User) -> bool:
+    raise NotImplementedError()  # TODO
+
+
+def get_tasks(db_session, *, survey_id: int, user: User, skip=0,
+              limit=100) -> List[Optional[Task]]:
+    raise NotImplementedError()  # TODO
+
+
+def get_task(db_session, *, survey_id: int, task_id: int, user: User) -> Task:
+    raise NotImplementedError()  # TODO
+
+
+def get_next_task(db_session, *, survey_id: int, user: User) -> Task:
+    raise NotImplementedError()  # TODO
+
+
+def save_answer(db_session, *, survey_id: int, task_id: int, user: User,
+                answer) -> None:
+    raise NotImplementedError()  # TODO
+
+
+def save_report(db_session, *, survey_id: int, task_id: int,
+                user: User) -> None:
+    raise NotImplementedError()  # TODO: later
