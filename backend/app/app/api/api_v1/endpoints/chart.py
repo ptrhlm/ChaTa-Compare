@@ -10,7 +10,7 @@ from starlette.responses import FileResponse
 from app import crud
 from app.api.api_v1.endpoints.token import router
 from app.api.utils.db import get_db
-from app.api.utils.security import (get_current_active_superuser,
+from app.api.utils.security import (get_current_active_researcher,
                                     get_current_active_user)
 from app.core import config
 from app.db.session import Session
@@ -33,14 +33,15 @@ async def get_chart(
             status_code=404,
             detail="Chart not found.",
         )
-    return FileResponse(chart.filepath)
+    else:
+        return FileResponse(chart.filepath)
 
 
 @router.get("/charts/", tags=["charts"], response_model=List[int])
 def search_charts(
         db: Session = Depends(get_db),
         q: str = None,
-        current_user: DBUser = Depends(get_current_active_superuser),
+        current_user: DBUser = Depends(get_current_active_researcher),
 ):
     """Search charts"""
     charts = crud.chart.search(db, q=q)
@@ -52,11 +53,11 @@ async def create_charts(
         *,
         db: Session = Depends(get_db),
         files: List[UploadFile] = File(...),
-        current_user: DBUser = Depends(get_current_active_superuser),
+        current_user: DBUser = Depends(get_current_active_researcher),
 ):
     """Create multiple charts and store their images"""
     logging.info('Saving charts - start')
-    if not current_user:
+    if not current_user:  # dead code: remove
         raise HTTPException(
             status_code=400,
             detail="The user is not authorized to upload charts.",
@@ -96,4 +97,4 @@ async def delete_chart(
         current_user: DBUser = Depends(get_current_active_user)
 ):
     """Remove chart if not used in any survey"""
-    raise NotImplementedError()  # TODO
+    raise NotImplementedError()  # TODO: later
