@@ -18,3 +18,4 @@ sqlalchemy-searchable
 tenacity
 ujson
 uvicorn
+sqlalchemy_utils
