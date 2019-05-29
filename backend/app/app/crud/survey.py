@@ -1,9 +1,13 @@
 from typing import Any, List, Optional
 
+from sqlalchemy import func
+
 from app.db_models.survey import Survey
 from app.db_models.task import Task
 from app.db_models.user import User
-from app.models.survey import CreateSurvey
+from app.db_models.chart_survey_association import chart_survey_association
+from app.db_models.survey_user_association import survey_user_association
+from app.models.survey import CreateSurvey, SurveyStatus
 
 
 def get(db_session, *, survey_id: int) -> Optional[Survey]:
@@ -30,34 +34,60 @@ def create(db_session, *, survey: CreateSurvey, researcher: User) -> Survey:
 
 
 def add_charts(db_session, *, survey: Survey, chart_ids: List[int]) -> None:
-    raise NotImplementedError()  # TODO
+    survey_id = survey.id
+    db_session.execute(
+        chart_survey_association.insert(), [
+            {"survey_id": survey_id, "chart_id": chart_id} for chart_id in chart_ids
+        ])
 
 
 def remove_charts(db_session, *, survey: Survey, chart_ids: List[int]) -> None:
-    raise NotImplementedError()  # TODO
+    survey_id = survey.id
+    db_session.execute(
+        chart_survey_association.delete().
+        where(chart_survey_association.c.survey_id == survey_id).
+        where(chart_survey_association.c.chart_id.in_(chart_ids))
+    )
 
 
 def close(db_session, *, survey: Survey) -> Survey:
-    raise NotImplementedError()  # TODO
+    survey.status = SurveyStatus.CLOSED
+    db_session.add(survey)
+    db_session.commit()
+    db_session.refress(survey)
+    return survey
 
 
 def get_participants(db_session, *, survey: Survey, skip=0,
                      limit=100) -> List[Optional[Any]]:
-    raise NotImplementedError()  # TODO
+    return survey.participants.offset(skip).limit(limit).all()
 
 
 def add_participants(db_session, *, survey: Survey,
-                     participant_ids: List[int]) -> List[Optional[Any]]:
-    raise NotImplementedError()  # TODO
+                     participant_ids: List[int]) -> None:
+    survey_id = survey.id
+    db_session.execute(
+        survey_user_association.insert(), [
+            {"survey_id": survey_id, "user_id": user_id} for user_id in participant_ids
+        ])
 
 
 def remove_participants(db_session, *, survey: Survey,
-                        participant_ids: List[int]) -> List[Optional[Any]]:
-    raise NotImplementedError()  # TODO
+                        participant_ids: List[int]) -> None:
+    survey_id = survey.id
+    db_session.execute(
+        survey_user_association.delete().
+        where(survey_user_association.c.survey_id == survey_id).
+        where(survey_user_association.c.user_id.in_(participant_ids))
+    )
 
 
 def is_participant(db_session, *, survey_id: int, user: User) -> bool:
-    raise NotImplementedError()  # TODO
+    result = db_session.query(survey_user_association) \
+                       .select(func.count(survey_user_association.c.user_id) > 0) \
+                       .where(survey_user_association.c.survey_id == survey_id) \
+                       .where(survey_user_association.c.user_id == User.id).fetchone()
+    return result
 
 
 def get_tasks(db_session, *, survey_id: int, user: User, skip=0,
