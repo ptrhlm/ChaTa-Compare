@@ -44,7 +44,7 @@ Authors:
 - Andrzej Szczesiak ([@quarcom](https://github.com/quarcom))
 - Patryk Wróbel
 
-Distributed under the Apache 2.0 license. See ``LICENSE`` for more information.
+Distributed under the GPL 3.0 license. See ``LICENSE`` for more information.
 
 <!-- Markdown link & img dfn's -->
 [chata-url]: https://github.com/mini-pw/2019L-ProjektZespolowy
