@@ -1,11 +1,9 @@
 from pydantic import BaseModel
 
-from app.models.chart import Chart
 from app.models.survey import Survey
 
 
-class Task(BaseModel):
+class Criterion(BaseModel):
     id: int
-    chart1: Chart
-    chart2: Chart
+    name: str
     survey: Survey
