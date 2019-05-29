@@ -4,11 +4,10 @@ from typing import List
 
 import aiofiles
 import ujson
-from fastapi import Depends, File, HTTPException, Path, UploadFile
+from fastapi import Depends, File, HTTPException, Path, UploadFile, APIRouter
 from starlette.responses import FileResponse
 
 from app import crud
-from app.api.api_v1.endpoints.token import router
 from app.api.utils.db import get_db
 from app.api.utils.security import (get_current_active_researcher,
                                     get_current_active_user)
@@ -17,6 +16,8 @@ from app.db.session import Session
 from app.db_models.chart import Chart
 from app.db_models.user import User as DBUser
 from app.models.chart import ChartBase, ChartInCreate, ChartType
+
+router = APIRouter()
 
 
 @router.get("/charts/{chart_id}", tags=["charts"])
