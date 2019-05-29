@@ -30,3 +30,13 @@ def test_email(
     """
     send_test_email(email_to=email_to)
     return {"msg": "Test email sent"}
+
+
+@router.post("/utils/download-charts-from-chata", tags=["utils"])
+def download_charts_from_chata(
+        current_user: UserInDB = Depends(get_current_active_superuser)
+):
+    """
+    Download charts from ChaTa database
+    """
+    pass  # TODO
