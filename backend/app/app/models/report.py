@@ -2,4 +2,4 @@ from pydantic import BaseModel
 
 
 class Report(BaseModel):
-    pass  # TODO
+    pass  # TODO: on some brighter day, maybe

@@ -18,7 +18,7 @@ async def survey_summary(
     current_user: User = Depends(get_current_active_user),
 ):
     """Survey summary"""
-    raise NotImplementedError()  # TODO
+    raise NotImplementedError()  # TODO: later
 
 
 @router.get("/surveys/{id}/report", tags=["survey", "report"], response_model=Report)
@@ -28,4 +28,4 @@ async def survey_report(
     current_user: User = Depends(get_current_active_user),
 ):
     """Generate survey report"""
-    raise NotImplementedError()  # TODO
+    raise NotImplementedError()  # TODO: later

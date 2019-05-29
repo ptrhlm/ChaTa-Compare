@@ -35,7 +35,7 @@ async def get_chart(
             detail="Chart not found.",
         )
     else:
-        return FileResponse(chart.filepath)
+        return FileResponse(chart.filepath)  # FIXME: returns only image, no metadata
 
 
 @router.get("/charts/", tags=["charts"], response_model=List[int])
@@ -46,7 +46,7 @@ def search_charts(
 ):
     """Search charts"""
     charts = crud.chart.search(db, q=q)
-    return [chart.id for chart in charts]
+    return [chart.id for chart in charts]  # FIXME: return charts instead of ids, why call API so many times
 
 
 @router.post("/charts/", tags=["charts"], response_model=List[int])
@@ -57,6 +57,7 @@ async def create_charts(
         current_user: DBUser = Depends(get_current_active_researcher),
 ):
     """Create multiple charts and store their images"""
+    # TODO: probably this will need some fixing
     logging.info('Saving charts - start')
     if not current_user:  # dead code: remove
         raise HTTPException(
@@ -98,4 +99,4 @@ async def delete_chart(
         current_user: DBUser = Depends(get_current_active_user)
 ):
     """Remove chart if not used in any survey"""
-    raise NotImplementedError()  # TODO: later
+    raise NotImplementedError()  # TODO: before the end of the world

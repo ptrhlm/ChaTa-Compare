@@ -36,7 +36,7 @@ class Survey(SurveyBaseInDB):
 
 
 class SurveySummary(BaseModel):
-    pass  # TODO
+    pass  # TODO: later
 
 
 class SurveyParticipant(BaseModel):
