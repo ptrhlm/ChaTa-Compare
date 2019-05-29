@@ -1,10 +1,10 @@
 SQLAlchemy
 aiofiles
 alembic
-celery==4.2.1
+celery>=4.3.0,<4.4.0
 email-validator
 emails
-fastapi>=0.7.1
+fastapi>=0.25.0,<1.0
 gunicorn
 jinja2
 passlib[bcrypt]
