@@ -42,4 +42,7 @@ export const api = {
       token,
     });
   },
+  async getChart(token: string, chartId: number) {
+    return axios.get<Blob>(`${apiUrl}/api/v1/charts/${chartId}`, { responseType: 'blob', ...authHeaders(token) });
+  }
 };

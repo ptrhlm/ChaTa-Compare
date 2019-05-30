@@ -6,14 +6,9 @@
             </v-card-title>
             <v-container fluid>
                 <v-layout justify-space-around>
-                    <v-flex xs5>
+                    <v-flex xs5 v-for="chartUrl in chartUrls">
                         <v-layout column>
-                            <v-img src="https://picsum.photos/510/300?random" aspect-ratio="1.7"></v-img>
-                        </v-layout>
-                    </v-flex>
-                    <v-flex xs5 v-if="!singleMode">
-                        <v-layout column>
-                            <v-img src="https://picsum.photos/510/300?random" aspect-ratio="1.7"></v-img>
+                            <v-img :src="chartUrl" aspect-ratio="1.7"></v-img>
                         </v-layout>
                     </v-flex>
                 </v-layout>
@@ -26,19 +21,19 @@
             </v-container>
             <v-container v-else>
                 Ogólna estetyka
-                <v-radio-group v-model="row" row>
+                <v-radio-group row>
                     <v-radio label="Lewy" value="radio-1"></v-radio>
                     <v-radio label="Prawy" value="radio-2"></v-radio>
                 </v-radio-group>
                 Czytelność wykresu
-                <v-radio-group v-model="row" row>
+                <v-radio-group row>
                     <v-radio label="Lewy" value="radio-1"></v-radio>
                     <v-radio label="Prawy" value="radio-2"></v-radio>
                 </v-radio-group>
             </v-container>
             <v-card-actions class="justify-center">
-                <v-btn @click="reload">Następny</v-btn>
-                <v-btn @click="reload">Pomiń</v-btn>
+                <v-btn @click="nextTask">Następny</v-btn>
+                <v-btn @click="nextTask">Pomiń</v-btn>
                 <v-btn :to="{name: 'main-surveys-current'}">Przerwij badanie</v-btn>
             </v-card-actions>
         </v-card>
@@ -46,21 +41,42 @@
 </template>
 
 <script lang="ts">
-    import {Component, Vue} from "vue-property-decorator";
+    import { Component, Vue } from "vue-property-decorator";
+    import { readChartsInTask } from '@/store/survey/getters';
+    import { dispatchLoadCharts } from '@/store/survey/actions';
 
     @Component
     export default class SurveyTask extends Vue {
         public rating1 = 0;
         public rating2 = 0;
 
+        public chartUrls: string[] = [];
 
-        get singleMode() {
-            console.log(this.$route.query.singleMode);
+        public async created(): Promise<void> {
+            await this.nextTask();
+        }
+
+        public async nextTask(): Promise<void> {
+            const maxId = 86;
+            const numberOfCharts = this.singleMode ? 1 : 2;
+            const chartIds = Array.from({ length: numberOfCharts }, () => Math.floor(Math.random() * maxId));
+            await dispatchLoadCharts(this.$store, { chartIds: chartIds });
+            this.createChartUrls();
+        }
+
+        get singleMode(): boolean {
             return this.$route.query.singleMode === "single";
         }
 
-        public reload() {
-            this.$router.go(0);
+        private createChartUrls(): void {
+            const urlCreator = window.URL;
+            const charts = readChartsInTask(this.$store);
+            const urls: string[] = [];
+            for (const chart of charts) {
+                const url= urlCreator.createObjectURL(chart);
+                urls.push(url);
+            }
+            this.chartUrls = urls;
         }
     }
 </script>
