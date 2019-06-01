@@ -11,9 +11,9 @@ services:
     environment:
       - 'JUPYTER=jupyter notebook --ip=0.0.0.0 --allow-root'
     labels:
-      - 'traefik.frontend.rule=PathPrefix:/api,/docs,/redoc'
-      - 'traefik.enable=true'
-      - 'traefik.port=80'
+      - traefik.frontend.rule=PathPrefix:/api,/docs,/redoc
+      - traefik.enable=true
+      - traefik.port=80
       - traefik.tags=${TRAEFIK_TAG}
       - SERVER_HOST=http://${DOMAIN}
     networks: 
@@ -21,10 +21,9 @@ services:
         aliases: 
           - ${DOMAIN}
     ports:
-      - '8888:80'
+      - '8888:8888'
     volumes:
       - ./backend/app:/app
-      - ./data:/data
 
   celeryworker:
     build:
@@ -38,7 +37,6 @@ services:
       - SERVER_HOST=http://${DOMAIN}
     volumes:
       - ./backend/app:/app
-      - ./data:/data
 
   backend-tests:
     build:
@@ -50,7 +48,6 @@ services:
       - JUPYTER=jupyter notebook --ip=0.0.0.0 --allow-root
     volumes:
       - ./backend/app:/app
-      - ./data:/data
 
   frontend:
     build: 
@@ -86,3 +83,12 @@ services:
   flower:
     ports:
       - '5555:5555'
+
+  storage:
+    labels:
+      - traefik.frontend.rule=PathPrefixStrip:/storage
+      - traefik.enable=true
+      - traefik.port=9000
+      - traefik.tags=${TRAEFIK_TAG}
+    ports:
+      - '9000:9000'

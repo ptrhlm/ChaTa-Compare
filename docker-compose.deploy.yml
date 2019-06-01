@@ -110,9 +110,16 @@ services:
       - ${TRAEFIK_PUBLIC_NETWORK}
       - default
 
+  storage:
+    volumes:
+      minio-data: /data
+      minio-config: /root/.minio
+  
 networks:
   traefik-public:
     external: true
 
 volumes:
   app-db-data:
+  minio-data:
+  minio-config:

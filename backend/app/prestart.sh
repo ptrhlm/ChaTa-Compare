@@ -8,3 +8,6 @@ alembic upgrade head
 
 # Create initial data in DB
 python /app/app/initial_data.py
+
+# Create bucket
+python /app/app/create_bucket.py

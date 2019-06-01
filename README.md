@@ -11,6 +11,12 @@
 
 ## Development setup
 
+Before first run, execute:
+```bash
+docker-compose pull
+docker-compose build
+```
+
 Start whole application with:
 ```bash
 docker-compose up
@@ -18,10 +24,11 @@ docker-compose up
 
 After application finishes startup procedure following services will be available:
   - App (http://localhost)
-  - API docs (http://localhost:8888/docs, http://localhost:8888/redoc)
+  - API docs (http://localhost/docs, http://localhost/redoc)
   - PGAdmin (http://localhost:5050) - PostgreSQL DB administation
   - Flower (http://localhost:5555) - Celery task queue administration
   - Traefik UI (http://localhost:8090) - routing configuration
+  - Minio (http://localhost:9000) - S3-compatible storage
 
 ## Deployment
 

@@ -6,7 +6,8 @@ from sqlalchemy_utils import TSVectorType
 
 class Chart(Base):
     id = Column(Integer, primary_key=True, index=True)
-    filepath = Column(String(120))
+    file_hash = Column(String(64))
+    file_ext = Column(String(10))
     type = Column(Enum(ChartType), index=True)
     title = Column(String(200), index=True)
     x_axis_title = Column(String(200), index=True)

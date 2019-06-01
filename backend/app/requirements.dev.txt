@@ -1,8 +1,8 @@
-mypy
-black
-jupyter
-isort
 autoflake
+black
 flake8
+isort
+jupyter
+mypy
 pytest
 vulture

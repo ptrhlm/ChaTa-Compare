@@ -18,7 +18,6 @@ class ChartType(str, Enum):
 
 
 class ChartBase(BaseModel):
-    file_name: str
     type: ChartType
     title: Optional[str]
     x_axis_title: Optional[str]
@@ -26,9 +25,15 @@ class ChartBase(BaseModel):
     description: Optional[str]
 
 
+class ChartInDB(ChartBase):
+    file_hash: str
+    file_ext: str
+
+
 class ChartInCreate(ChartBase):
-    pass
+    file_name: str
+    file_contents: str
 
 
 class Chart(ChartBase):
-    pass
+    file_path: str

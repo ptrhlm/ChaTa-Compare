@@ -5,9 +5,11 @@ services:
     depends_on: 
       - db
       - queue
+      - storage
     env_file:
       - env-postgres.env
       - env-backend.env
+      - env-minio.env
     environment:
       - SERVER_NAME=${DOMAIN}
       - SERVER_HOST=https://${DOMAIN}
@@ -16,9 +18,11 @@ services:
     depends_on: 
       - db
       - queue
+      - storage
     env_file:
       - env-postgres.env
       - env-backend.env
+      - env-minio.env
     environment:
       - SERVER_HOST=https://${DOMAIN}
 
@@ -50,3 +54,9 @@ services:
 
   queue:
     image: rabbitmq:3
+
+  storage:
+    image: minio/minio
+    env_file:
+      - env-minio.env
+    command: server /data
