@@ -28,3 +28,7 @@ class ChartBase(BaseModel):
 
 class ChartInCreate(ChartBase):
     pass
+
+
+class Chart(ChartBase):
+    pass
