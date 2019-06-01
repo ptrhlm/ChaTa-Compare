@@ -46,6 +46,7 @@ def create(db_session, *, user_in: UserInCreate) -> User:
         hashed_password=get_password_hash(user_in.password),
         full_name=user_in.full_name,
         is_superuser=user_in.is_superuser,
+        is_researcher=user_in.is_researcher,
     )
     db_session.add(user)
     db_session.commit()

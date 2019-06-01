@@ -15,5 +15,6 @@ def init_db(db_session):
             email=config.FIRST_SUPERUSER,
             password=config.FIRST_SUPERUSER_PASSWORD,
             is_superuser=True,
+            is_researcher=True,
         )
         user = crud.user.create(db_session, user_in=user_in)
