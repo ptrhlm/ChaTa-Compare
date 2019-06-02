@@ -41,3 +41,4 @@ class ChartInCreate(ChartBase):
 
 class Chart(ChartBase):
     file_path: str
+    file_contents: str

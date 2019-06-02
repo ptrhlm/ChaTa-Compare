@@ -29,6 +29,7 @@ async def get_chart(*,
                     chart_id: int = Path(...,
                                          title="The ID of the chart to get"),
                     db: Session = Depends(get_db),
+                    storage: Minio = Depends(get_storage),
                     current_user: DBUser = Depends(get_current_active_user)):
     """Get one chart"""
     db_chart = crud.chart.get(db, chart_id=chart_id)
@@ -38,13 +39,20 @@ async def get_chart(*,
             detail="Chart not found.",
         )
     else:
+        #TODO Fix domain in signed url. Keep only one access method.
+        file_path = storage.presigned_get_object(config.MINIO_BUCKET,
+                               db_chart.file_hash + db_chart.file_ext)
+        file_contents = storage.get_object(config.MINIO_BUCKET,
+                               db_chart.file_hash + db_chart.file_ext).read()
+
         chart = models.chart.Chart(type=db_chart.type,
                                    title=db_chart.title,
                                    x_axis_title=db_chart.x_axis_title,
                                    y_axis_title=db_chart.y_axis_title,
                                    description=db_chart.description,
+                                   file_contents=base64.b64encode(file_contents),
+                                   file_path=file_path
                                    )
-        chart.file_path = get_url(db_chart.file_hash + db_chart.file_ext)
         return chart
 
 
