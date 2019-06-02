@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { apiUrl } from '@/env';
-import { IUserProfile, IUserProfileUpdate, IUserProfileCreate } from './interfaces';
+import { IUserProfile, IUserProfileCreate, IUserProfileUpdate } from './interfaces';
+import { ISurvey, ISurveyCreate } from "@/interfaces/survey";
 
 function authHeaders(token: string) {
   return {
@@ -41,6 +42,9 @@ export const api = {
       new_password: password,
       token,
     });
+  },
+  async createSurvey(token: string, data: ISurveyCreate) {
+    return axios.post<ISurvey>(`${apiUrl}/api/v1/surveys`, data, authHeaders(token));
   },
   async getChart(token: string, chartId: number) {
     return axios.get<Blob>(`${apiUrl}/api/v1/charts/${chartId}`, { responseType: 'blob', ...authHeaders(token) });

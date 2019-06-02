@@ -5,10 +5,27 @@ import { SurveyState } from './state';
 import { getStoreAccessors } from 'typesafe-vuex';
 import { commitAddChartInTask, commitClearChartsInTask } from './mutations';
 import { dispatchCheckApiError } from '../main/actions';
+import { commitAddNotification, commitRemoveNotification } from "@/store/main/mutations";
+import { ISurveyCreate } from "@/interfaces/survey";
 
 type MainContext = ActionContext<SurveyState, State>;
 
 export const actions = {
+    async actionCreateSurvey(context: MainContext, payload: ISurveyCreate) {
+        try {
+            const loadingNotification = { content: 'saving', showProgress: true };
+            commitAddNotification(context, loadingNotification);
+            const response = (await Promise.all([
+                api.createSurvey(context.rootState.main.token, payload),
+                await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
+            ]))[0];
+            commitRemoveNotification(context, loadingNotification);
+            commitAddNotification(context, { content: 'Survey successfully created', color: 'success' });
+            return response.data
+        } catch (error) {
+            await dispatchCheckApiError(context, error);
+        }
+    },
     async actionLoadChartsInTask(context: MainContext, payload: { chartIds: number[] }) {
         commitClearChartsInTask(context);
         try {
@@ -26,4 +43,5 @@ export const actions = {
 
 const { dispatch } = getStoreAccessors<SurveyState, State>('');
 
+export const dispatchCreateSurvey = dispatch(actions.actionCreateSurvey);
 export const dispatchLoadCharts = dispatch(actions.actionLoadChartsInTask);

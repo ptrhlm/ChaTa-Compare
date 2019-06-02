@@ -3,8 +3,7 @@ from sqlalchemy import (Boolean, Column, Enum, Float, ForeignKey, Integer,
 from sqlalchemy.orm import relationship
 
 from app.db.base_class import Base
-from app.db_models.chart_survey_association import chart_survey_association
-from app.db_models.survey_user_association import survey_user_association
+from app.db_models.associations import survey_user_association, chart_survey_association
 from app.models.survey import SurveyStatus, SurveyType
 
 

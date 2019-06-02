@@ -1,26 +1,25 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, Path
-from sqlalchemy.orm import Session
-
 from app import crud
 from app.api.utils.db import get_db
 from app.api.utils.security import (get_current_active_researcher,
                                     get_current_active_user)
 from app.db_models.user import User
-from app.models.survey import (CreateSurvey, Survey, SurveyParticipant,
+from app.models.survey import (SurveyInCreate, Survey, SurveyParticipant,
                                SurveyStatus)
+from fastapi import APIRouter, Depends, HTTPException, Path
+from sqlalchemy.orm import Session
 
 router = APIRouter()
 
 
 @router.post("/surveys", tags=["survey"], response_model=Survey)
 async def create_survey(
-        survey: CreateSurvey,
+        survey: SurveyInCreate,
         db: Session = Depends(get_db),
         current_user: User = Depends(get_current_active_researcher)):
     """Create a survey"""
-    survey = crud.survey.create(db, survey=survey, researcher=current_user)
+    survey = crud.survey.create(db, survey_in=survey, researcher=current_user)
     return survey
 
 
