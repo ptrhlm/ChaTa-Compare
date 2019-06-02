@@ -41,7 +41,7 @@ class ChartInCreate(ChartBase):
 
 class Chart(ChartBase):
     file_path: str
-    file_contents: str
+    file_contents: Optional[str]
 
 
 class SearchParams(BaseModel):

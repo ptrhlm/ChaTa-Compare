@@ -6,9 +6,9 @@
             </v-card-title>
             <v-container fluid>
                 <v-layout justify-space-around>
-                    <v-flex xs5 v-for="chartUrl in chartUrls">
+                    <v-flex xs5 v-for="chartBase64 in chartsBase64">
                         <v-layout column>
-                            <v-img :src="chartUrl" aspect-ratio="1.7"></v-img>
+                            <v-img :src="chartBase64" aspect-ratio="1.7"></v-img>
                         </v-layout>
                     </v-flex>
                 </v-layout>
@@ -50,7 +50,7 @@
         public rating1 = 0;
         public rating2 = 0;
 
-        public chartUrls: string[] = [];
+        public chartsBase64: string[] = [];
 
         public async created(): Promise<void> {
             await this.nextTask();
@@ -61,22 +61,20 @@
             const numberOfCharts = this.singleMode ? 1 : 2;
             const chartIds = Array.from({ length: numberOfCharts }, () => Math.floor(Math.random() * maxId));
             await dispatchLoadCharts(this.$store, { chartIds: chartIds });
-            this.createChartUrls();
+            this.createBase64Srcs();
         }
 
         get singleMode(): boolean {
             return this.$route.query.singleMode === "single";
         }
 
-        private createChartUrls(): void {
-            const urlCreator = window.URL;
+        private createBase64Srcs(): void {
             const charts = readChartsInTask(this.$store);
-            const urls: string[] = [];
+            const srcs: string[] = [];
             for (const chart of charts) {
-                const url= urlCreator.createObjectURL(chart);
-                urls.push(url);
+                srcs.push('data:image/png;base64,' + chart.file_contents);
             }
-            this.chartUrls = urls;
+            this.chartsBase64 = srcs;
         }
     }
 </script>
