@@ -41,8 +41,7 @@ async def get_chart(*,
             detail="Chart not found.",
         )
     else:
-        chart['file_path'] = get_url(chart['file_hash'] + '.' +
-                                     chart['file_ext'])
+        chart['file_path'] = get_url(chart['file_hash'] + chart['file_ext'])
         return chart
 
 
@@ -68,7 +67,7 @@ async def create_chart(
     """Create multiple charts and store their images"""
 
     for chart in charts:
-        _, file_ext = os.path.splitext(chart.file_name)
+        file_ext = os.path.splitext(chart.file_name)[1]
         file_contents = base64.b64decode(chart.file_contents)
         m = hashlib.sha256()
         m.update(file_contents)
@@ -82,7 +81,7 @@ async def create_chart(
         file_io = io.BytesIO(file_contents)
         try:
             storage.put_object(config.MINIO_BUCKET,
-                               f'{file_hash}.{file_ext}',
+                               file_hash + file_ext,
                                file_io,
                                file_size=len(file_contents))
         except:
