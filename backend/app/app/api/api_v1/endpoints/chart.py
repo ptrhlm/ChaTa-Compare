@@ -1,28 +1,24 @@
-import logging
-import os
-import io
-import os.path
 import base64
 import hashlib
+import io
+import logging
+import os
+import os.path
 from typing import List
 
-from minio import Minio
-import aiofiles
-import ujson
-from fastapi import Depends, File, HTTPException, Path, UploadFile, APIRouter
-from starlette.responses import FileResponse
-
 from app import crud
-from app.api.utils.storage import get_storage
-from app.storage import get_url
+from app import models
 from app.api.utils.db import get_db
 from app.api.utils.security import (get_current_active_researcher,
                                     get_current_active_user)
+from app.api.utils.storage import get_storage
 from app.core import config
 from app.db.session import Session
-from app.db_models.chart import Chart
 from app.db_models.user import User as DBUser
-from app.models.chart import ChartBase, ChartInCreate, ChartType, Chart, ChartInDB
+from app.models.chart import ChartBase, ChartInCreate, Chart, ChartInDB
+from app.storage import get_url
+from fastapi import Depends, HTTPException, Path, APIRouter
+from minio import Minio
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -35,14 +31,20 @@ async def get_chart(*,
                     db: Session = Depends(get_db),
                     current_user: DBUser = Depends(get_current_active_user)):
     """Get one chart"""
-    chart = crud.chart.get(db, chart_id=chart_id)
-    if not chart:
+    db_chart = crud.chart.get(db, chart_id=chart_id)
+    if not db_chart:
         raise HTTPException(
             status_code=404,
             detail="Chart not found.",
         )
     else:
-        chart['file_path'] = get_url(chart['file_hash'] + chart['file_ext'])
+        chart = models.chart.Chart(type=db_chart.type,
+                                   title=db_chart.title,
+                                   x_axis_title=db_chart.x_axis_title,
+                                   y_axis_title=db_chart.y_axis_title,
+                                   description=db_chart.description,
+                                   )
+        chart.file_path = get_url(db_chart.file_hash + db_chart.file_ext)
         return chart
 
 
@@ -57,7 +59,7 @@ def search_charts(
     return charts
 
 
-@router.post("/charts", tags=["charts"], response_model=List[Chart])
+@router.post("/charts", tags=["charts"], response_model=List[models.chart.Chart])
 async def create_chart(
         charts: List[ChartInCreate],
         *,
@@ -94,9 +96,18 @@ async def create_chart(
                                 detail='Upload of chart failed')
 
     created_charts = crud.chart.create(db, charts_in=charts_db)
-    for chart in created_charts:
-        chart['file_path'] = get_url(chart['file_hash'] + chart['file_ext'])
-    return created_charts
+    response = []
+    for created_chart in created_charts:
+        chart = models.chart.Chart(
+            type=created_chart.type,
+            title=created_chart.title,
+            x_axis_title=created_chart.x_axis_title,
+            y_axis_title=created_chart.y_axis_title,
+            description=created_chart.description,
+            file_path=get_url(created_chart.file_hash + created_chart.file_ext),
+        )
+        response.append(chart)
+    return response
 
 
 @router.delete("/charts/{id}", tags=["charts"])
