@@ -33,3 +33,13 @@ export interface ISurvey {
     exp_required: boolean;
     min_answers_quality: number;
 }
+
+export interface ISurveySummary {
+    id: number;
+    name: string;
+    answers: number;
+    finished_tasks: number;
+    active_users: number;
+    end_date: string;
+    status: ESurveyStatus;
+}

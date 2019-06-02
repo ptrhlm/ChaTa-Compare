@@ -1,13 +1,13 @@
+from datetime import date
 from typing import List
-
 from app import crud
 from app.api.utils.db import get_db
 from app.api.utils.security import (get_current_active_researcher,
                                     get_current_active_user)
 from app.db_models.user import User
 from app.models.survey import (SurveyInCreate, Survey, SurveyParticipant,
-                               SurveyStatus)
-from fastapi import APIRouter, Depends, HTTPException, Path
+                               SurveyStatus, SurveySummary)
+from fastapi import APIRouter, Depends, HTTPException, Path, Query
 from sqlalchemy.orm import Session
 
 router = APIRouter()
@@ -81,12 +81,50 @@ async def remove_charts_from_survey(
 
 
 @router.get("/surveys", tags=["survey"], response_model=List[Survey])
-async def list_surveys(skip: int = Path(0, ge=0),
-                       limit: int = Path(100, gt=0, le=1000),
+async def list_surveys(skip: int = Query(0, ge=0),
+                       limit: int = Query(100, gt=0, le=1000),
                        db: Session = Depends(get_db),
                        current_user: User = Depends(get_current_active_user)):
     """List all surveys"""
     surveys = crud.survey.get_multi(db, skip=skip, limit=limit)
+    return surveys
+
+
+@router.get("/surveys/summary", tags=["survey"], response_model=List[SurveySummary])
+async def list_survey_summaries(userId: int = None,
+                                skip: int = Query(0, ge=0),
+                                limit: int = Query(100, gt=0, le=1000),
+                                db: Session = Depends(get_db),
+                                current_user: User = Depends(get_current_active_user)):
+    surveys = [
+        SurveySummary(
+            id=1,
+            name='Survey 1',
+            answers=12,
+            finished_tasks=4,
+            active_users=5,
+            end_date=date(2019, 5, 5),
+            status=SurveyStatus.OPEN,
+        ),
+        SurveySummary(
+            id=2,
+            name='Survey 2',
+            answers=120,
+            finished_tasks=44,
+            active_users=15,
+            end_date=date(2018, 2, 1),
+            status=SurveyStatus.OPEN,
+        ),
+        SurveySummary(
+            id=3,
+            name='Survey 3',
+            answers=60,
+            finished_tasks=20,
+            active_users=8,
+            end_date=date(2019, 3, 12),
+            status=SurveyStatus.CLOSED,
+        ),
+    ]
     return surveys
 
 

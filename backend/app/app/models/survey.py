@@ -1,3 +1,4 @@
+from datetime import date
 from enum import Enum
 from typing import List
 
@@ -37,7 +38,13 @@ class Survey(SurveyBaseInDB):
 
 
 class SurveySummary(BaseModel):
-    pass  # TODO: later
+    id: int
+    name: str
+    answers: int
+    finished_tasks: int
+    active_users: int
+    end_date: date
+    status: SurveyStatus
 
 
 class SurveyParticipant(BaseModel):

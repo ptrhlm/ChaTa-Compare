@@ -26,6 +26,16 @@ export const actions = {
             await dispatchCheckApiError(context, error);
         }
     },
+    async actionGetSurveySummaries(context: MainContext, payload: { userId: number }) {
+        try {
+            const response = await api.getSurveySummaries(context.rootState.main.token, payload.userId);
+            if (response) {
+                return response.data
+            }
+        } catch (error) {
+            await dispatchCheckApiError(context, error);
+        }
+    },
     async actionLoadChartsInTask(context: MainContext, payload: { chartIds: number[] }) {
         commitClearChartsInTask(context);
         try {
@@ -44,4 +54,5 @@ export const actions = {
 const { dispatch } = getStoreAccessors<SurveyState, State>('');
 
 export const dispatchCreateSurvey = dispatch(actions.actionCreateSurvey);
+export const dispatchGetSurveySummaries = dispatch(actions.actionGetSurveySummaries);
 export const dispatchLoadCharts = dispatch(actions.actionLoadChartsInTask);
