@@ -53,3 +53,9 @@ class CreateSurvey(BaseModel):
     tasks_per_chart: int
     exp_required: bool = False
     min_answers_quality: float = 0.0
+
+class CurrentSurvey(BaseModel):
+	name: str
+	id: int
+	criterion: str
+	

@@ -2,14 +2,13 @@
     <div>
         <v-toolbar >
             <v-toolbar-title>
-                Trwające badania
+                Current surveys
             </v-toolbar-title>
         </v-toolbar>
         <v-data-table :headers="headers" :items="surveys">
             <template slot="items" slot-scope="props">
                 <td>{{ props.item.name }}</td>
                 <td>{{ props.item.criterion }}</td>
-                <td>{{ props.item.createdDate }}</td>
                 <td class="justify-center layout px-0">
                     <v-tooltip top>
                         <span>Weź udział</span>
@@ -24,41 +23,26 @@
 </template>
 
 <script lang="ts">
-    import {Component, Vue} from "vue-property-decorator";
+import { Component, Vue } from "vue-property-decorator";
+import { ICurrentSurvey } from '@/interfaces/survey';
+import { dispatchLoadCurrentSurveys } from '@/store/survey/actions';
 
-    @Component
-    export default class CurrentSurveys extends Vue {
-        public headers = [
-            {value: "name", text: "Nazwa"},
-            {value: "criterion", text: "Kryterium"},
-            {value: "createdDate", text: "Data utworzenia"},
-            {value: "join", text: ""}
-        ];
-        public surveys = [
-            {
-                id: 1,
-                name: "Czytelność wykresów dot. medycyny",
-                criterion: "Ogólna estetyka",
-                createdDate: "04-04-2019",
-            },
-            {
-                id: 12,
-                name: "Czytelność wykresów dot. medycyny",
-                criterion: "Czytelność wykresu",
-                createdDate: "27-03-2019",
-            },
-            {
-                id: 23,
-                name: "Estetyka wykresów kołowych na przykładzie danych finansowych",
-                criterion: "Ogólna estetyka wykresu",
-                createdDate: "01-04-2019",
-            },
-            {
-                id: 24,
-                name: "Estetyka wykresów kołowych na przykładzie danych finansowych",
-                criterion: "Dobór palety barw",
-                createdDate: "01-04-2019",
-            }
-        ];
+@Component
+export default class CurrentSurveys extends Vue {
+
+    public headers = [
+        {value: "name", text: "Name"},
+        {value: "criterion", text: "Criterion"},
+        {value: "join", text: ""}
+    ];
+
+    public surveys: ICurrentSurvey[] = [];
+
+    public async created() {
+        const response = await dispatchLoadCurrentSurveys(this.$store);
+        if (response) {
+            this.surveys = response;
+        }
     }
+}
 </script>

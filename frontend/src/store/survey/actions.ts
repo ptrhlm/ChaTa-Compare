@@ -22,8 +22,21 @@ export const actions = {
             await dispatchCheckApiError(context, error);
         }
     },
+    async actionLoadCurrentSurveys(context: MainContext) {
+        try {
+            const response = await api.getCurrentSurveys(context.rootState.main.token);
+            if (response) {
+                return response.data;
+            }
+        } catch (error) {
+            console.log(error);
+            await dispatchCheckApiError(context, error);
+        }
+    }
 };
 
 const { dispatch } = getStoreAccessors<SurveyState, State>('');
 
 export const dispatchLoadCharts = dispatch(actions.actionLoadChartsInTask);
+export const dispatchLoadCurrentSurveys = dispatch(actions.actionLoadCurrentSurveys);
+

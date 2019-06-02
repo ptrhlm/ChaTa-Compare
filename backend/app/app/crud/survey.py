@@ -2,6 +2,7 @@ from typing import Any, List, Optional
 
 from sqlalchemy import func
 
+from app.db_models.criterion import Criterion
 from app.db_models.survey import Survey
 from app.db_models.task import Task
 from app.db_models.user import User
@@ -9,13 +10,16 @@ from app.db_models.chart_survey_association import chart_survey_association
 from app.db_models.survey_user_association import survey_user_association
 from app.models.survey import CreateSurvey, SurveyStatus
 
-
 def get(db_session, *, survey_id: int) -> Optional[Survey]:
     return db_session.query(Survey).filter(Survey.id == survey_id).first()
 
 
 def get_multi(db_session, *, skip=0, limit=100) -> List[Optional[Survey]]:
     return db_session.query(Survey).offset(skip).limit(limit).all()
+
+	
+def getCurrent_multi(db_session, *, skip=0, limit=100) -> List[Optional[Survey]]:
+    return db_session.query(Survey).filter(Survey.status == SurveyStatus.OPEN).offset(skip).limit(limit).all()	
 
 
 def create(db_session, *, survey: CreateSurvey, researcher: User) -> Survey:
@@ -89,6 +93,9 @@ def is_participant(db_session, *, survey_id: int, user: User) -> bool:
                        .where(survey_user_association.c.user_id == User.id).fetchone()
     return result
 
+def get_criterions(db_session, *, survey_id: int, skip=0,
+                     limit=100) -> List[str]:
+    return db_session.query(Criterion).filter(Criterion.survey_id == survey_id).offset(skip).limit(limit).all()	
 
 def get_tasks(db_session, *, survey_id: int, user: User, skip=0,
               limit=100) -> List[Optional[Task]]:

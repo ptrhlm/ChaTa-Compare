@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { apiUrl } from '@/env';
 import { IUserProfile, IUserProfileUpdate, IUserProfileCreate } from './interfaces';
+import { ICurrentSurvey } from './interfaces/survey';
 
 function authHeaders(token: string) {
   return {
@@ -44,5 +45,8 @@ export const api = {
   },
   async getChart(token: string, chartId: number) {
     return axios.get<Blob>(`${apiUrl}/api/v1/charts/${chartId}`, { responseType: 'blob', ...authHeaders(token) });
-  }
+    },
+  async getCurrentSurveys(token: string) {
+      return axios.get<ICurrentSurvey[]>(`${apiUrl}/api/v1/surveys/current`, authHeaders(token));
+    },
 };

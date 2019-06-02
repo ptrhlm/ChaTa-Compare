@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, Path
+from fastapi import APIRouter, Depends, HTTPException, Path, Query
 from sqlalchemy.orm import Session
 
 from app import crud
@@ -9,7 +9,7 @@ from app.api.utils.security import (get_current_active_researcher,
                                     get_current_active_user)
 from app.db_models.user import User
 from app.models.survey import (CreateSurvey, Survey, SurveyParticipant,
-                               SurveyStatus)
+                               SurveyStatus, CurrentSurvey )
 
 router = APIRouter()
 
@@ -89,7 +89,20 @@ async def list_surveys(skip: int = Path(0, ge=0),
     """List all surveys"""
     surveys = crud.survey.get_multi(db, skip=skip, limit=limit)
     return surveys
-
+	
+@router.get("/surveys/current", tags=["survey"], response_model=List[CurrentSurvey])
+async def list_current_surveys(skip: int = Query(0, ge=0),
+                       limit: int = Query(100, gt=0, le=1000),
+                       db: Session = Depends(get_db),
+                       current_user: User = Depends(get_current_active_user)):
+    """List all surveys"""
+    surveys = crud.survey.getCurrent_multi(db, skip=skip, limit=limit)
+    currentSurveys = []
+    for surv in surveys:
+        criterions = crud.survey.get_criterions(db, survey_id = surv.id)
+        for criterion in criterions:
+            currentSurveys.append(CurrentSurvey(id=surv.id, name=surv.name, criterion=criterion.name))
+    return currentSurveys
 
 @router.put("/surveys/{id}/close", tags=["survey"], response_model=Survey)
 async def close_survey(id: int,

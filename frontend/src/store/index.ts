@@ -12,7 +12,7 @@ const storeOptions: StoreOptions<State> = {
   modules: {
     main: mainModule,
     admin: adminModule,
-    survey: surveyModule,
+    survey: surveyModule
   },
 };
 
