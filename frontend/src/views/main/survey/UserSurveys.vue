@@ -40,11 +40,11 @@
     @Component
     export default class CurrentSurveys extends Vue {
         public headers = [
-            {value: "name", text: "Nazwa"},
-            {value: "answers", text: "Liczba odpowiedzi"},
-            {value: "tasks", text: "Liczba ocenionych zadań"},
-            {value: "users", text: "Liczba aktywnych uczestników"},
-            {value: "endDate", text: "Data zakończenia"},
+            {value: "name", text: "Name"},
+            {value: "answers", text: "Answers"},
+            {value: "tasks", text: "Tasks with answers"},
+            {value: "users", text: "Active participants"},
+            {value: "endDate", text: "End date"},
             {value: "action", text: ""}
         ];
         public surveys = [

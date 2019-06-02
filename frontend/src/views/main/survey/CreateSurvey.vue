@@ -2,17 +2,17 @@
     <v-container fluid>
         <v-card class="ma-3 pa-3">
             <v-card-title primary-title>
-                <div class="headline primary--text">Tworzenie badania</div>
+                <div class="headline primary--text">Create survey</div>
             </v-card-title>
             <v-card-text>
                 <template>
                     <v-stepper v-model="e1">
                         <v-stepper-header>
-                            <v-stepper-step :complete="e1 > 1" step="1">Definicja badania</v-stepper-step>
+                            <v-stepper-step :complete="e1 > 1" step="1">Survey definition</v-stepper-step>
 
                             <v-divider></v-divider>
 
-                            <v-stepper-step :complete="e1 > 2" step="2">Wybór wykresów</v-stepper-step>
+                            <v-stepper-step :complete="e1 > 2" step="2">Charts selection</v-stepper-step>
 
                             <v-divider></v-divider>
 
@@ -22,16 +22,16 @@
                             <v-stepper-content step="1">
                                 <v-flex xs12 sm6 md12>
                                     <v-text-field
-                                            label="Nazwa badania"
-                                            placeholder="Nazwa badania"
+                                            label="Survey name"
+                                            placeholder="Survey name"
                                             v-model="name"
                                     ></v-text-field>
                                 </v-flex>
 
                                 <v-flex xs12 sm6 md12>
                                     <v-textarea
-                                            label="Opis badania"
-                                            placeholder="Opis badania"
+                                            label="Description"
+                                            placeholder="Description"
                                     ></v-textarea>
                                 </v-flex>
 
@@ -51,7 +51,7 @@
                                         >
                                             <v-text-field
                                                     slot="activator"
-                                                    label="Planowana data zakończenia badania"
+                                                    label="Planned end date"
                                                     v-model="date"
                                                     append-icon="event"
                                                     readonly
@@ -72,8 +72,8 @@
 
                                 <v-layout align-center justify-start row fill-height>
                                     <v-text-field
-                                            label="Kryteria badania"
-                                            placeholder="Kryteria badania"
+                                            label="Criterions"
+                                            placeholder="Criterions"
                                             v-model="criterion"
                                     ></v-text-field>
 
@@ -91,18 +91,18 @@
                                 <v-spacer></v-spacer>
 
                                 <v-layout column>
-                                    <p style="margin-bottom: unset">Sposób oceny wykresów</p>
+                                    <p style="margin-bottom: unset">Charts assessment method</p>
                                     <v-radio-group :mandatory="false">
-                                        <v-radio label="ocena porównawcza (zestawianie parami)"
+                                        <v-radio label="comparative assessment (pairs)"
                                                  value="radio-1"></v-radio>
-                                        <v-radio label="ocena niezależna (ocena w skali 1-10)"
+                                        <v-radio label="individual assessment (1-10 star rating)"
                                                  value="radio-2"></v-radio>
                                     </v-radio-group>
                                 </v-layout>
 
                                 <v-flex xs12 sm6 md12>
                                     <v-text-field
-                                            label="Liczba odpowiedzi dla każdego zadania"
+                                            label="Answers for each task"
                                             placeholder="5"
                                     ></v-text-field>
                                 </v-flex>
@@ -111,10 +111,10 @@
                                         color="primary"
                                         @click="e1 = 2"
                                 >
-                                    Dalej
+                                    Next
                                 </v-btn>
 
-                                <v-btn flat>Anuluj</v-btn>
+                                <v-btn flat>Cancel</v-btn>
                             </v-stepper-content>
 
                             <v-stepper-content step="2">
@@ -122,32 +122,32 @@
 
                                 <v-layout row align-content-space-between justify-space-between>
                                     <v-flex column xs12 sm6 md8>
-                                        <div class="subheading secondary--text text--lighten-2">Nazwa badania</div>
+                                        <div class="subheading secondary--text text--lighten-2">Survey name</div>
                                         <h2>{{ name }}</h2>
 
                                         <v-flex xs12 sm6 md12>
                                             <v-text-field
-                                                    label="Wyszukaj wykresy"
+                                                    label="Search"
                                                     placeholder="5"
                                             ></v-text-field>
                                             <v-btn
                                                     color="primary"
-                                            >Szukaj
+                                            >Search
                                             </v-btn>
                                         </v-flex>
                                     </v-flex>
 
                                     <v-flex column xs12 sm6 md3>
-                                        <div class="subheading secondary--text text--lighten-2">Rodzaje wykresów</div>
+                                        <div class="subheading secondary--text text--lighten-2">Chart types</div>
                                         <h2>{{ name }}</h2>
 
                                         <v-flex xs12 sm6 md12>
-                                            <v-checkbox class="ma-0 pa-0" label="słupkowe"></v-checkbox>
-                                            <v-checkbox class="ma-0 pa-0" label="kołowe"></v-checkbox>
-                                            <v-checkbox class="ma-0 pa-0" label="liniowe"></v-checkbox>
-                                            <v-checkbox class="ma-0 pa-0" label="punktowe"></v-checkbox>
-                                            <v-checkbox class="ma-0 pa-0" label="pierścieniowe"></v-checkbox>
-                                            <v-checkbox class="ma-0 pa-0" label="inne"></v-checkbox>
+                                            <v-checkbox class="ma-0 pa-0" label="column"></v-checkbox>
+                                            <v-checkbox class="ma-0 pa-0" label="pie"></v-checkbox>
+                                            <v-checkbox class="ma-0 pa-0" label="linear"></v-checkbox>
+                                            <v-checkbox class="ma-0 pa-0" label="dot"></v-checkbox>
+                                            <v-checkbox class="ma-0 pa-0" label="donut"></v-checkbox>
+                                            <v-checkbox class="ma-0 pa-0" label="other"></v-checkbox>
                                         </v-flex>
                                     </v-flex>
                                 </v-layout>
@@ -191,7 +191,7 @@
                                     </v-flex>
 
                                     <v-text-field
-                                            label="Użyj w badaniu"
+                                            label="Use in survey"
                                             placeholder="5"
                                     ></v-text-field>
                                     z 1455
@@ -202,10 +202,10 @@
                                         color="primary"
                                         @click="navigateToMySurveys()"
                                 >
-                                    Dalej
+                                    Next
                                 </v-btn>
 
-                                <v-btn flat>Anuluj</v-btn>
+                                <v-btn flat>Cancel</v-btn>
                             </v-stepper-content>
 
                         </v-stepper-items>
@@ -214,7 +214,7 @@
             </v-card-text>
             <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn @click="cancel">Powrót</v-btn>
+                <v-btn @click="cancel">Return</v-btn>
             </v-card-actions>
         </v-card>
     </v-container>
