@@ -102,8 +102,8 @@ def compare_login(host, username, password):
 
 
 def compare_add_charts(host, token, charts):
-    res = requests.post(host + "/api/v1/charts/",
-                        charts,
+    res = requests.post(host + "/api/v1/charts",
+                        json=charts,
                         headers={
                             "Authorization": "Bearer " + token
                         }).json()
@@ -163,7 +163,7 @@ def main():
                     "file_name":
                     page["image"],
                     "file_contents":
-                    base64.b64encode(cropped_image_io.getvalue())
+                    base64.b64encode(cropped_image_io.getvalue()).decode()
                 })
 
         except Exception as err:

@@ -73,7 +73,7 @@ def recover_password(email: str, db: Session = Depends(get_db)):
     return {"msg": "Password recovery email sent"}
 
 
-@router.post("/reset-password/", tags=["login"], response_model=Msg)
+@router.post("/reset-password", tags=["login"], response_model=Msg)
 def reset_password(token: str, new_password: str, db: Session = Depends(get_db)):
     """
     Reset password

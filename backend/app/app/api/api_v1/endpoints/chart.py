@@ -22,9 +22,10 @@ from app.core import config
 from app.db.session import Session
 from app.db_models.chart import Chart
 from app.db_models.user import User as DBUser
-from app.models.chart import ChartBase, ChartInCreate, ChartType, Chart
+from app.models.chart import ChartBase, ChartInCreate, ChartType, Chart, ChartInDB
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
 @router.get("/charts/{chart_id}", tags=["charts"], response_model=Chart)
@@ -45,7 +46,7 @@ async def get_chart(*,
         return chart
 
 
-@router.get("/charts/", tags=["charts"], response_model=List[Chart])
+@router.get("/charts/search", tags=["charts"], response_model=List[Chart])
 def search_charts(
         db: Session = Depends(get_db),
         q: str = None,
@@ -56,7 +57,7 @@ def search_charts(
     return charts
 
 
-@router.post("/charts/", tags=["charts"], response_model=List[Chart])
+@router.post("/charts", tags=["charts"], response_model=List[Chart])
 async def create_chart(
         charts: List[ChartInCreate],
         *,
@@ -66,6 +67,8 @@ async def create_chart(
 ):
     """Create multiple charts and store their images"""
 
+    charts_db = list()
+
     for chart in charts:
         file_ext = os.path.splitext(chart.file_name)[1]
         file_contents = base64.b64decode(chart.file_contents)
@@ -73,22 +76,26 @@ async def create_chart(
         m.update(file_contents)
         file_hash = m.hexdigest()
 
-        chart.file_ext = file_ext
-        chart.file_hash = file_hash
-        del chart.file_name
-        del chart.file_contents
+        chart = chart.dict(exclude={'file_name', 'file_contents'})
+        chart["file_ext"] = file_ext
+        chart["file_hash"] = file_hash
+        chart = ChartInDB(**chart)
+        charts_db.append(chart)
 
         file_io = io.BytesIO(file_contents)
         try:
             storage.put_object(config.MINIO_BUCKET,
                                file_hash + file_ext,
                                file_io,
-                               file_size=len(file_contents))
-        except:
+                               length=len(file_contents))
+        except Exception as err:
+            logger.error(err)
             raise HTTPException(status_code=500,
                                 detail='Upload of chart failed')
 
-    created_charts = crud.chart.create(db, charts_in=charts)
+    created_charts = crud.chart.create(db, charts_in=charts_db)
+    for chart in created_charts:
+        chart['file_path'] = get_url(chart['file_hash'] + chart['file_ext'])
     return created_charts
 
 

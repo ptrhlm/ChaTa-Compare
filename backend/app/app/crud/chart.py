@@ -5,7 +5,7 @@ from sqlalchemy_searchable import search as db_search
 
 
 def create(db_session, *, charts_in: List[Chart]) -> List[Chart]:
-    db_session.add_all(charts_in)
+    db_session.add_all(map(lambda x: Chart(**x.dict()), charts_in))
     db_session.commit()
     for chart in charts_in:
         db_session.refresh(chart)
