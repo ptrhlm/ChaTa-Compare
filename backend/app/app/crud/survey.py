@@ -53,6 +53,8 @@ def remove_charts(db_session, *, survey: Survey, chart_ids: List[int]) -> None:
         where(chart_survey_association.c.chart_id.in_(chart_ids))
     )
 
+def get_charts_count(db_session, *, survey_id: int) -> int:
+    return survey.charts.count()
 
 def close(db_session, *, survey: Survey) -> Survey:
     survey.status = SurveyStatus.CLOSED

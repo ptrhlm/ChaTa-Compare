@@ -9,7 +9,7 @@ from app.api.utils.security import (get_current_active_researcher,
                                     get_current_active_user)
 from app.db_models.user import User
 from app.models.survey import (CreateSurvey, Survey, SurveyParticipant,
-                               SurveyStatus, CurrentSurvey )
+                               SurveyStatus, CurrentSurvey, SurveyDetails, SurveyType )
 
 router = APIRouter()
 
@@ -99,10 +99,24 @@ async def list_current_surveys(skip: int = Query(0, ge=0),
     surveys = crud.survey.getCurrent_multi(db, skip=skip, limit=limit)
     currentSurveys = []
     for surv in surveys:
-        criterions = crud.survey.get_criterions(db, survey_id = surv.id)
-        for criterion in criterions:
+        criteria = crud.survey.get_criterions(db, survey_id = surv.id)
+        for criterion in criteria:
             currentSurveys.append(CurrentSurvey(id=surv.id, name=surv.name, criterion=criterion.name))
     return currentSurveys
+
+@router.get("/surveys/{id}/details", tags=["survey"], response_model=SurveyDetails)
+async def survey_details(id: int,
+                         db: Session = Depends(get_db),
+                         current_user: User = Depends(get_current_active_user)):
+    """Get survey details"""
+    survey = crud.survey.get(db, survey_id = id)
+    criteria = crud.survey.get_criterions(db, survey_id = id)
+    surveyCrits = []
+    for crit in criteria:
+        surveyCrits.append(crit.name)
+    chartsCount = crud.survey.get_charts_count(db, survey_id = id)
+    details = SurveyDetails(name=survey.name, description=survey.description, criteria=surveyCrits, dataCharacteristics=["Charts count: " + chartsCount], assessment = "comparative" if survey.type == SurveyType.COMPARISON else "individual")
+    return details
 
 @router.put("/surveys/{id}/close", tags=["survey"], response_model=Survey)
 async def close_survey(id: int,

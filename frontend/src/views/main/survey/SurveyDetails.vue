@@ -2,24 +2,24 @@
     <v-container fluid>
         <v-card class="ma-3 pa-3">
             <v-card-title primary-title>
-                <div class="headline primary--text">Szczegóły badania</div>
+                <div class="headline primary--text">Survey details</div>
             </v-card-title>
             <v-card-text>
                 <template>
-                    <div class="subheading secondary--text text--lighten-2">Nazwa badania</div>
+                    <div class="subheading secondary--text text--lighten-2">Survey name</div>
                     {{ survey.name }}<br/><br/>
-                    <div class="subheading secondary--text text--lighten-2">Opis</div>
+                    <div class="subheading secondary--text text--lighten-2">Description</div>
                     {{ survey.description }}<br/><br/>
-                    <div class="subheading secondary--text text--lighten-2">Planowana data zakończenia badania</div>
-                    {{ survey.plannedEndDate }}<br/><br/>
-                    <div class="subheading secondary--text text--lighten-2">Kryteria oceny</div>
+                    <!--<div class="subheading secondary--text text--lighten-2">Planned end date</div>
+                    {{ survey.plannedEndDate }}<br/><br/>-->
+                    <div class="subheading secondary--text text--lighten-2">Criteria</div>
                     <ul>
                         <li v-for="criterion in survey.criteria">{{ criterion }}</li>
                     </ul>
                     <br/><br/>
-                    <div class="subheading secondary--text text--lighten-2">Sposób oceny</div>
+                         <div class="subheading secondary--text text--lighten-2">Charts assessment method</div>
                     {{ survey.assessment }}<br/><br/>
-                    <div class="subheading secondary--text text--lighten-2">Zbiór testowy</div>
+                    <div class="subheading secondary--text text--lighten-2">Charts collection</div>
                     <ul>
                         <li v-for="characteristics in survey.dataCharacteristics">{{ characteristics }}</li>
                     </ul>
@@ -28,70 +28,32 @@
             </v-card-text>
             <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn @click="cancel">Powrót</v-btn>
-                <v-btn :to="{name: 'main-surveys-task', params: {id: surveyId}, query: {singleMode: survey.assessment}}">Weź udział</v-btn>
+                <v-btn @click="cancel">Return</v-btn>
+                <v-btn :to="{name: 'main-surveys-task', params: {id: surveyId}, query: {singleMode: survey.assessment}}">Join now</v-btn>
             </v-card-actions>
         </v-card>
     </v-container>
 </template>
 
 <script lang="ts">
-    import {Component, Vue} from "vue-property-decorator";
+    import { Component, Vue } from "vue-property-decorator";
+    import { ISurveyDetails } from '@/interfaces/survey';
+    import { dispatchGetSurveyDetails } from '@/store/survey/actions';
 
     @Component
     export default class SurveyDetails extends Vue {
-        public surveys = [
-            {
-                id: 1,
-                name: "Czytelność wykresów dot. medycyny",
-                description: "Badanie ma na celu stworzenie rankingu wykresów przedstawiających szeroko rozumiane dane " +
-                    "medyczne. Zbiór wykresów obejmuje wykresy kołowe, słupkowe i inne.",
-                plannedEndDate: "04-05-2019",
-                criteria: ["Ogólna estetyka", "Czytelność wykresu"],
-                assessment: "comparison",
-                dataCharacteristics: ["Liczność zbioru: 5", "Rodzaje wykresów: słupkowe, liniowe"]
-            },
-            {
-                id: 12,
-                name: "Czytelność wykresów dot. medycyny",
-                description: "Badanie ma na celu stworzenie rankingu wykresów przedstawiających szeroko rozumiane dane " +
-                    "medyczne. Zbiór wykresów obejmuje wykresy kołowe, słupkowe i inne.",
-                plannedEndDate: "27-04-2019",
-                criteria: ["Ogólna estetyka", "Dobór palety barw"],
-                assessment: "single",
-                dataCharacteristics: ["Liczność zbioru: 25", "Rodzaje wykresów: liniowe"]
-
-            },
-            {
-                id: 23,
-                name: "Estetyka wykresów kołowych na przykładzie danych finansowych",
-                description: "Badanie ma na celu stworzenie rankingu wykresów przedstawiających szeroko rozumiane dane " +
-                    "finansowe. Zbiór wykresów obejmuje wykresy kołowe, słupkowe i inne.",
-                plannedEndDate: "01-05-2019",
-                criteria: ["Ogólna estetyka", "Czytelność wykresu"],
-                assessment: "comparison",
-                dataCharacteristics: ["Liczność zbioru: 15", "Rodzaje wykresów: słupkowe, liniowe"]
-
-            },
-            {
-                id: 24,
-                name: "Estetyka wykresów kołowych na przykładzie danych finansowych",
-                createdDate: "01-07-2019",
-                description: "Badanie ma na celu stworzenie rankingu wykresów przedstawiających szeroko rozumiane dane " +
-                    "medyczne. Zbiór wykresów obejmuje wykresy kołowe, słupkowe i inne.",
-                plannedEndDate: "04-05-2019",
-                criteria: ["Dobór palety barw", "Czytelność wykresu"],
-                assessment: "single",
-                dataCharacteristics: ["Liczność zbioru: 20", "Rodzaje wykresów: kołowe"]
-            }
-        ];
 
         get surveyId() {
             return this.$router.currentRoute.params.id;
         }
 
-        get survey() {
-            return this.surveys.find(value => value.id === +this.surveyId);
+        public survey;
+
+        public async created() {
+            const response = await dispatchGetSurveyDetails(this.$store, { survey_id: parseInt(this.surveyId) });
+            console.log(response)
+            this.survey = response;
+            //return this.surveys.find(value => value.id === +this.surveyId);
         }
 
         public cancel() {

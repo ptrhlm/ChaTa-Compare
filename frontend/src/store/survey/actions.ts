@@ -29,6 +29,16 @@ export const actions = {
                 return response.data;
             }
         } catch (error) {
+            await dispatchCheckApiError(context, error);
+        }
+    },
+    async actionGetSurveyDetails(context: MainContext, payload: { survey_id: number }) {
+        try {
+            const response = await api.getSurveyDetails(context.rootState.main.token, payload.survey_id);
+            if (response) {
+                return response.data;
+            }
+        } catch (error) {
             console.log(error);
             await dispatchCheckApiError(context, error);
         }
@@ -39,4 +49,5 @@ const { dispatch } = getStoreAccessors<SurveyState, State>('');
 
 export const dispatchLoadCharts = dispatch(actions.actionLoadChartsInTask);
 export const dispatchLoadCurrentSurveys = dispatch(actions.actionLoadCurrentSurveys);
+export const dispatchGetSurveyDetails = dispatch(actions.actionGetSurveyDetails);
 

@@ -72,8 +72,8 @@
 
                                 <v-layout align-center justify-start row fill-height>
                                     <v-text-field
-                                            label="Criterions"
-                                            placeholder="Criterions"
+                                            label="Criteria"
+                                            placeholder="Criteria"
                                             v-model="criterion"
                                     ></v-text-field>
 

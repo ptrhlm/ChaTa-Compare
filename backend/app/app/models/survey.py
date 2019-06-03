@@ -4,6 +4,8 @@ from pydantic import BaseModel
 
 from app.models.user import User
 
+from typing import List
+
 
 class SurveyType(str, Enum):
     SINGLE = 'single'
@@ -55,7 +57,13 @@ class CreateSurvey(BaseModel):
     min_answers_quality: float = 0.0
 
 class CurrentSurvey(BaseModel):
-	name: str
-	id: int
-	criterion: str
+    name: str
+    id: int
+    criterion: str
 	
+class SurveyDetails(BaseModel):
+    name: str
+    description: str
+    criteria: List[str] = []
+    assessment: str
+    dataCharacteristics: List[str] = []

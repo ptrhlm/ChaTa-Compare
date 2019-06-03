@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { apiUrl } from '@/env';
 import { IUserProfile, IUserProfileUpdate, IUserProfileCreate } from './interfaces';
-import { ICurrentSurvey } from './interfaces/survey';
+import { ICurrentSurvey, ISurveyDetails } from './interfaces/survey';
 
 function authHeaders(token: string) {
   return {
@@ -49,4 +49,7 @@ export const api = {
   async getCurrentSurveys(token: string) {
       return axios.get<ICurrentSurvey[]>(`${apiUrl}/api/v1/surveys/current`, authHeaders(token));
     },
+    async getSurveyDetails(token: string, survey_id: number) {
+        return axios.get<ISurveyDetails>(`${apiUrl}/api/v1/surveys/${survey_id}/details`, authHeaders(token));
+    }
 };
