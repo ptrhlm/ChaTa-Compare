@@ -1,4 +1,6 @@
+from datetime import date
 from enum import Enum
+from typing import List
 
 from pydantic import BaseModel
 
@@ -22,7 +24,7 @@ class SurveyBase(BaseModel):
     description: str
     status: SurveyStatus
     type: SurveyType
-    researcher: User
+    researcher_id: int
     answers_per_task: int
     tasks_per_chart: int
     exp_required: bool = False
@@ -38,7 +40,13 @@ class Survey(SurveyBaseInDB):
 
 
 class SurveySummary(BaseModel):
-    pass  # TODO: later
+    id: int
+    name: str
+    answers: int
+    finished_tasks: int
+    active_users: int
+    end_date: date
+    status: SurveyStatus
 
 
 class SurveyParticipant(BaseModel):
@@ -47,10 +55,13 @@ class SurveyParticipant(BaseModel):
     experience: float = 0.0
 
 
-class CreateSurvey(BaseModel):
+class SurveyInCreate(BaseModel):
     name: str
     description: str
+    status: SurveyStatus
     type: SurveyType
+    criteria: List[str]
+    charts_ids: List[int]
     answers_per_task: int
     tasks_per_chart: int
     exp_required: bool = False

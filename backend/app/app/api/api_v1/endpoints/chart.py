@@ -4,7 +4,7 @@ import io
 import logging
 import os
 import os.path
-from typing import List
+from typing import List, Optional
 
 from app import crud
 from app import models
@@ -15,7 +15,7 @@ from app.api.utils.storage import get_storage
 from app.core import config
 from app.db.session import Session
 from app.db_models.user import User as DBUser
-from app.models.chart import ChartBase, ChartInCreate, Chart, ChartInDB
+from app.models.chart import ChartBase, ChartInCreate, Chart, ChartInDB, ChartType, SearchParams
 from app.storage import get_url
 from fastapi import Depends, HTTPException, Path, APIRouter
 from minio import Minio
@@ -24,11 +24,23 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
+@router.post("/charts/search", tags=["charts"], response_model=List[int])
+def search_charts(
+        db: Session = Depends(get_db),
+        search_params: SearchParams = None,
+        current_user: DBUser = Depends(get_current_active_researcher),
+):
+    """Search charts"""
+    charts = crud.chart.search(db, q=search_params.q, chart_types=search_params.chart_types)
+    return [chart.id for chart in charts]
+
+
 @router.get("/charts/{chart_id}", tags=["charts"], response_model=Chart)
 async def get_chart(*,
                     chart_id: int = Path(...,
                                          title="The ID of the chart to get"),
                     db: Session = Depends(get_db),
+                    storage: Minio = Depends(get_storage),
                     current_user: DBUser = Depends(get_current_active_user)):
     """Get one chart"""
     db_chart = crud.chart.get(db, chart_id=chart_id)
@@ -38,25 +50,24 @@ async def get_chart(*,
             detail="Chart not found.",
         )
     else:
+        #TODO Fix domain in signed url. Keep only one access method.
+        file_path = storage.presigned_get_object(config.MINIO_BUCKET,
+                               db_chart.file_hash + db_chart.file_ext)
+        file_contents = storage.get_object(config.MINIO_BUCKET,
+                               db_chart.file_hash + db_chart.file_ext).read()
+
         chart = models.chart.Chart(type=db_chart.type,
                                    title=db_chart.title,
                                    x_axis_title=db_chart.x_axis_title,
                                    y_axis_title=db_chart.y_axis_title,
                                    description=db_chart.description,
+                                   file_contents=base64.b64encode(file_contents),
+                                   file_path=file_path
                                    )
-        chart.file_path = get_url(db_chart.file_hash + db_chart.file_ext)
         return chart
 
 
-@router.get("/charts/search", tags=["charts"], response_model=List[Chart])
-def search_charts(
-        db: Session = Depends(get_db),
-        q: str = None,
-        current_user: DBUser = Depends(get_current_active_researcher),
-):
-    """Search charts"""
-    charts = crud.chart.search(db, q=q)
-    return charts
+
 
 
 @router.post("/charts", tags=["charts"], response_model=List[models.chart.Chart])

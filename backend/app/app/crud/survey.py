@@ -1,14 +1,12 @@
 from typing import Any, List, Optional
 
-from sqlalchemy import func
-
+from app.db_models.associations import survey_user_association, chart_survey_association
 from app.db_models.criterion import Criterion
 from app.db_models.survey import Survey
 from app.db_models.task import Task
 from app.db_models.user import User
-from app.db_models.chart_survey_association import chart_survey_association
-from app.db_models.survey_user_association import survey_user_association
-from app.models.survey import CreateSurvey, SurveyStatus
+from app.models.survey import SurveyInCreate, SurveyStatus
+from sqlalchemy import func
 
 def get(db_session, *, survey_id: int) -> Optional[Survey]:
     return db_session.query(Survey).filter(Survey.id == survey_id).first()
@@ -17,21 +15,32 @@ def get(db_session, *, survey_id: int) -> Optional[Survey]:
 def get_multi(db_session, *, skip=0, limit=100) -> List[Optional[Survey]]:
     return db_session.query(Survey).offset(skip).limit(limit).all()
 
-	
 def getCurrent_multi(db_session, *, skip=0, limit=100) -> List[Optional[Survey]]:
     return db_session.query(Survey).filter(Survey.status == SurveyStatus.OPEN).offset(skip).limit(limit).all()	
 
-
-def create(db_session, *, survey: CreateSurvey, researcher: User) -> Survey:
-    survey = Survey(name=survey.name,
-                    description=survey.description,
-                    type=survey.type,
+def create(db_session, *, survey_in: SurveyInCreate, researcher: User) -> Survey:
+    survey = Survey(name=survey_in.name,
+                    description=survey_in.description,
+                    status=survey_in.status,
+                    type=survey_in.type,
                     researcher=researcher,
-                    answers_per_task=survey.answers_per_task,
-                    tasks_per_chart=survey.tasks_per_chart,
-                    exp_required=survey.exp_required,
-                    min_answers_quality=survey.min_answers_quality)
+                    answers_per_task=survey_in.answers_per_task,
+                    tasks_per_chart=survey_in.tasks_per_chart,
+                    exp_required=survey_in.exp_required,
+                    min_answers_quality=survey_in.min_answers_quality)
     db_session.add(survey)
+    db_session.flush()
+    db_session.refresh(survey)
+
+    criterion = []
+    for criterion_name in survey_in.criteria:
+        criterion.append(Criterion(name=criterion_name, survey=survey))
+    db_session.add_all(criterion)
+
+    chart_survey_associations = [{'chart_id': chart_id, 'survey_id': survey.id} for chart_id in survey_in.charts_ids]
+    chart_survey_association_insert = chart_survey_association.insert().values(chart_survey_associations)
+    db_session.execute(chart_survey_association_insert)
+
     db_session.commit()
     db_session.refresh(survey)
     return survey

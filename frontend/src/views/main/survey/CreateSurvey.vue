@@ -32,6 +32,7 @@
                                     <v-textarea
                                             label="Description"
                                             placeholder="Description"
+                                            v-model="description"
                                     ></v-textarea>
                                 </v-flex>
 
@@ -92,11 +93,11 @@
 
                                 <v-layout column>
                                     <p style="margin-bottom: unset">Charts assessment method</p>
-                                    <v-radio-group :mandatory="false">
+                                    <v-radio-group v-model="type" :mandatory="false">
                                         <v-radio label="comparative assessment (pairs)"
-                                                 value="radio-1"></v-radio>
+                                                 value="comparison"></v-radio>
                                         <v-radio label="individual assessment (1-10 star rating)"
-                                                 value="radio-2"></v-radio>
+                                                 value="single"></v-radio>
                                     </v-radio-group>
                                 </v-layout>
 
@@ -104,6 +105,7 @@
                                     <v-text-field
                                             label="Answers for each task"
                                             placeholder="5"
+                                            v-model="answersPerTask"
                                     ></v-text-field>
                                 </v-flex>
 
@@ -221,77 +223,41 @@
 </template>
 
 <script lang="ts">
-    import {Component, Vue} from "vue-property-decorator";
+    import { Component, Vue } from "vue-property-decorator";
+    import { ESurveyStatus, ESurveyType, ISurveyCreate } from "@/interfaces/survey";
+    import { dispatchCreateSurvey } from "@/store/survey/actions";
 
     @Component
     export default class CreateSurvey extends Vue {
-        public data() {
-            return {
-                e1: 0,
-                date: new Date().toISOString().substr(0, 10),
-                menu: false,
-                criteria: [],
-                criterion: '',
-                name: ''
-            }
-        }
+        public e1: number = 0;
+        public name: string = '';
+        public description: string = '';
+        public menu: boolean = false;
+        public date: string = new Date().toISOString().substr(0, 10);
+        public criterion: string = '';
+        public criteria: any[] = [];
+        public type: ESurveyType = ESurveyType.Comparison;
+        public answersPerTask: number = 5;
 
-        public navigateToMySurveys() {
+        public async navigateToMySurveys() {
+            await this.createSurvey();
             this.$router.push('/main/surveys/my');
         }
 
-        public surveys = [
-            {
-                id: 1,
-                name: "Czytelność wykresów dot. medycyny",
-                description: "Badanie ma na celu stworzenie rankingu wykresów przedstawiających szeroko rozumiane dane " +
-                    "medyczne. Zbiór wykresów obejmuje wykresy kołowe, słupkowe i inne.",
-                plannedEndDate: "04-05-2019",
-                criteria: ["Ogólna estetyka", "Czytelność wykresu"],
-                assessment: "comparison",
-                dataCharacteristics: ["Liczność zbioru: 5", "Rodzaje wykresów: słupkowe, liniowe"]
-            },
-            {
-                id: 12,
-                name: "Czytelność wykresów dot. medycyny",
-                description: "Badanie ma na celu stworzenie rankingu wykresów przedstawiających szeroko rozumiane dane " +
-                    "medyczne. Zbiór wykresów obejmuje wykresy kołowe, słupkowe i inne.",
-                plannedEndDate: "27-04-2019",
-                criteria: ["Ogólna estetyka", "Dobór palety barw"],
-                assessment: "single",
-                dataCharacteristics: ["Liczność zbioru: 25", "Rodzaje wykresów: liniowe"]
-
-            },
-            {
-                id: 23,
-                name: "Estetyka wykresów kołowych na przykładzie danych finansowych",
-                description: "Badanie ma na celu stworzenie rankingu wykresów przedstawiających szeroko rozumiane dane " +
-                    "finansowe. Zbiór wykresów obejmuje wykresy kołowe, słupkowe i inne.",
-                plannedEndDate: "01-05-2019",
-                criteria: ["Ogólna estetyka", "Czytelność wykresu"],
-                assessment: "comparison",
-                dataCharacteristics: ["Liczność zbioru: 15", "Rodzaje wykresów: słupkowe, liniowe"]
-
-            },
-            {
-                id: 24,
-                name: "Estetyka wykresów kołowych na przykładzie danych finansowych",
-                createdDate: "01-07-2019",
-                description: "Badanie ma na celu stworzenie rankingu wykresów przedstawiających szeroko rozumiane dane " +
-                    "medyczne. Zbiór wykresów obejmuje wykresy kołowe, słupkowe i inne.",
-                plannedEndDate: "04-05-2019",
-                criteria: ["Dobór palety barw", "Czytelność wykresu"],
-                assessment: "single",
-                dataCharacteristics: ["Liczność zbioru: 20", "Rodzaje wykresów: kołowe"]
-            }
-        ];
-
-        get surveyId() {
-            return this.$router.currentRoute.params.id;
-        }
-
-        get survey() {
-            return this.surveys.find(value => value.id === +this.surveyId);
+        private async createSurvey() {
+            const newSurvey: ISurveyCreate = {
+                name: this.name,
+                description: this.description,
+                status: ESurveyStatus.Open,
+                type: this.type,
+                criteria: this.criteria,
+                charts_ids: [],
+                answers_per_task: this.answersPerTask,
+                tasks_per_chart: 3,
+                exp_required: true,
+                min_answers_quality: 0.9,
+            };
+            await dispatchCreateSurvey(this.$store, newSurvey);
         }
 
         public cancel() {

@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { apiUrl } from '@/env';
-import { IUserProfile, IUserProfileUpdate, IUserProfileCreate } from './interfaces';
-import { ICurrentSurvey, ISurveyDetails } from './interfaces/survey';
+import { IUserProfile, IUserProfileCreate, IUserProfileUpdate } from './interfaces';
+import { ISurvey, ISurveyCreate, ISurveySummary, ICurrentSurvey, ISurveyDetails } from "@/interfaces/survey";
+import { IChart } from "@/interfaces/chart";
 
 function authHeaders(token: string) {
   return {
@@ -43,11 +44,17 @@ export const api = {
       token,
     });
   },
+  async createSurvey(token: string, data: ISurveyCreate) {
+    return axios.post<ISurvey>(`${apiUrl}/api/v1/surveys`, data, authHeaders(token));
+  },
+  async getSurveySummaries(token: string, userId: number) {
+    return axios.get<ISurveySummary[]>(`${apiUrl}/api/v1/surveys/summary?userId=${userId}`, authHeaders(token));
+  },
   async getChart(token: string, chartId: number) {
-    return axios.get<Blob>(`${apiUrl}/api/v1/charts/${chartId}`, { responseType: 'blob', ...authHeaders(token) });
+    return axios.get<IChart>(`${apiUrl}/api/v1/charts/${chartId}`, authHeaders(token));
     },
-  async getCurrentSurveys(token: string) {
-      return axios.get<ICurrentSurvey[]>(`${apiUrl}/api/v1/surveys/current`, authHeaders(token));
+    async getCurrentSurveys(token: string) {
+        return axios.get<ICurrentSurvey[]>(`${apiUrl}/api/v1/surveys/current`, authHeaders(token));
     },
     async getSurveyDetails(token: string, survey_id: number) {
         return axios.get<ISurveyDetails>(`${apiUrl}/api/v1/surveys/${survey_id}/details`, authHeaders(token));

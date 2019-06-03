@@ -1,3 +1,4 @@
+from datetime import date
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, Path, Query
@@ -8,19 +9,19 @@ from app.api.utils.db import get_db
 from app.api.utils.security import (get_current_active_researcher,
                                     get_current_active_user)
 from app.db_models.user import User
-from app.models.survey import (CreateSurvey, Survey, SurveyParticipant,
-                               SurveyStatus, CurrentSurvey, SurveyDetails, SurveyType )
+from app.models.survey import (CreateSurvey, SurveyInCreate, Survey, SurveyParticipant,
+                               SurveyStatus, SurveySummary, CurrentSurvey, SurveyDetails, SurveyType)
 
 router = APIRouter()
 
 
 @router.post("/surveys", tags=["survey"], response_model=Survey)
 async def create_survey(
-        survey: CreateSurvey,
+        survey: SurveyInCreate,
         db: Session = Depends(get_db),
         current_user: User = Depends(get_current_active_researcher)):
     """Create a survey"""
-    survey = crud.survey.create(db, survey=survey, researcher=current_user)
+    survey = crud.survey.create(db, survey_in=survey, researcher=current_user)
     return survey
 
 
@@ -82,8 +83,8 @@ async def remove_charts_from_survey(
 
 
 @router.get("/surveys", tags=["survey"], response_model=List[Survey])
-async def list_surveys(skip: int = Path(0, ge=0),
-                       limit: int = Path(100, gt=0, le=1000),
+async def list_surveys(skip: int = Query(0, ge=0),
+                       limit: int = Query(100, gt=0, le=1000),
                        db: Session = Depends(get_db),
                        current_user: User = Depends(get_current_active_user)):
     """List all surveys"""
@@ -117,6 +118,44 @@ async def survey_details(id: int,
     chartsCount = crud.survey.get_charts_count(db, survey_id = id)
     details = SurveyDetails(name=survey.name, description=survey.description, criteria=surveyCrits, dataCharacteristics=["Charts count: " + chartsCount], assessment = "comparative" if survey.type == SurveyType.COMPARISON else "individual")
     return details
+
+@router.get("/surveys/summary", tags=["survey"], response_model=List[SurveySummary])
+async def list_survey_summaries(userId: int = None,
+                                skip: int = Query(0, ge=0),
+                                limit: int = Query(100, gt=0, le=1000),
+                                db: Session = Depends(get_db),
+                                current_user: User = Depends(get_current_active_user)):
+    surveys = [
+        SurveySummary(
+            id=1,
+            name='Survey 1',
+            answers=12,
+            finished_tasks=4,
+            active_users=5,
+            end_date=date(2019, 5, 5),
+            status=SurveyStatus.OPEN,
+        ),
+        SurveySummary(
+            id=2,
+            name='Survey 2',
+            answers=120,
+            finished_tasks=44,
+            active_users=15,
+            end_date=date(2018, 2, 1),
+            status=SurveyStatus.OPEN,
+        ),
+        SurveySummary(
+            id=3,
+            name='Survey 3',
+            answers=60,
+            finished_tasks=20,
+            active_users=8,
+            end_date=date(2019, 3, 12),
+            status=SurveyStatus.CLOSED,
+        ),
+    ]
+    return surveys
+
 
 @router.put("/surveys/{id}/close", tags=["survey"], response_model=Survey)
 async def close_survey(id: int,

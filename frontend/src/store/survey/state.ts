@@ -1,3 +1,5 @@
+import { IChart } from "@/interfaces/chart";
+
 export interface SurveyState {
-    chartsInTask: Blob[];
+    chartsInTask: IChart[];
 }

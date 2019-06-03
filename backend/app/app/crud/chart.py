@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from app.db_models.chart import Chart
-from app.models.chart import ChartInDB
+from app.models.chart import ChartInDB, ChartType
 from sqlalchemy_searchable import search as db_search
 
 
@@ -22,9 +22,13 @@ def create(db_session, *, charts_in: List[ChartInDB]) -> List[Chart]:
     return charts
 
 
-def search(db_session, *, q: str) -> List[Chart]:
+def search(db_session, *, q: str, chart_types: Optional[List[ChartType]]) -> List[Chart]:
     query = db_session.query(Chart)
-    query = db_search(query, q, sort=True)
+    if chart_types:
+        query = query.filter(Chart.type.in_(chart_types))
+    if q:
+        query = db_search(query, q, sort=True)
+
     return query
 
 

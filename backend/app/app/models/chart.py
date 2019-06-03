@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Optional
+from typing import Optional, List
 
 from pydantic import BaseModel
 
@@ -41,3 +41,9 @@ class ChartInCreate(ChartBase):
 
 class Chart(ChartBase):
     file_path: str
+    file_contents: Optional[str]
+
+
+class SearchParams(BaseModel):
+    q: str = None
+    chart_types: Optional[List[ChartType]] = None
