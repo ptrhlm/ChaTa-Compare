@@ -1,0 +1,18 @@
+language: minimal
+
+services:
+  - docker
+
+before_install:
+  - docker build -t ptrhlm/chata-compare-backend:latest -f backend/backend.dockerfile backend
+  - docker build -t ptrhlm/chata-compare-worker:latest -f backend/celeryworker.dockerfile backend
+  - docker build -t ptrhlm/chata-compare-frontend:latest frontend
+  
+deploy:
+  provider: script
+  script: bash bin/docker_push.sh
+  on:
+    tags: true
+
+notifications:
+  email: false
