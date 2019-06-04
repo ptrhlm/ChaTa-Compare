@@ -12,16 +12,14 @@
                     {{ survey.description }}<br/><br/>
                     <!--<div class="subheading secondary--text text--lighten-2">Planned end date</div>
                     {{ survey.plannedEndDate }}<br/><br/>-->
-                    <div class="subheading secondary--text text--lighten-2">Criteria</div>
-                    <ul>
-                        <li v-for="criterion in survey.criteria">{{ criterion }}</li>
-                    </ul>
+                    <div class="subheading secondary--text text--lighten-2">Criterion</div>
+                    {{survey.criterion}}
                     <br/><br/>
                          <div class="subheading secondary--text text--lighten-2">Charts assessment method</div>
-                    {{ survey.assessment }}<br/><br/>
+                    {{ survey.type }}<br/><br/>
                     <div class="subheading secondary--text text--lighten-2">Charts collection</div>
                     <ul>
-                        <li v-for="characteristics in survey.dataCharacteristics">{{ characteristics }}</li>
+                        <li v-for="characteristics in survey.data_characteristics">{{ characteristics }}</li>
                     </ul>
                     <br/><br/>
                 </template>
@@ -29,7 +27,7 @@
             <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn @click="cancel">Return</v-btn>
-                <v-btn :to="{name: 'main-surveys-task', params: {id: surveyId}, query: {singleMode: survey.assessment}}">Join now</v-btn>
+                <v-btn :to="{name: 'main-surveys-task', params: {id: surveyId}, query: {singleMode: survey.type}}">Join now</v-btn>
             </v-card-actions>
         </v-card>
     </v-container>
@@ -37,23 +35,33 @@
 
 <script lang="ts">
     import { Component, Vue } from "vue-property-decorator";
-    import { ISurveyDetails } from '@/interfaces/survey';
     import { dispatchGetSurveyDetails } from '@/store/survey/actions';
+    import { ESurveyType, ISurveyDetails } from "@/interfaces/survey";
 
     @Component
     export default class SurveyDetails extends Vue {
-
-        get surveyId() {
-            return this.$router.currentRoute.params.id;
-        }
-
-        public survey;
+        public survey: ISurveyDetails = {
+            name: '',
+            description: '',
+            criterion: '',
+            type: ESurveyType.Comparison,
+            data_characteristics: []
+        };
 
         public async created() {
-            const response = await dispatchGetSurveyDetails(this.$store, { survey_id: parseInt(this.surveyId) });
-            console.log(response)
-            this.survey = response;
-            //return this.surveys.find(value => value.id === +this.surveyId);
+            const response = await dispatchGetSurveyDetails(this.$store,
+                { surveyId: this.surveyId, criterionId: this.criterionId });
+            if (response) {
+                this.survey = response;
+            }
+        }
+
+        get surveyId() {
+            return +this.$router.currentRoute.params.surveyId;
+        }
+
+        get criterionId() {
+            return +this.$router.currentRoute.params.criterionId;
         }
 
         public cancel() {

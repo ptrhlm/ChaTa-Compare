@@ -5,14 +5,18 @@
                 Current surveys
             </v-toolbar-title>
         </v-toolbar>
-        <v-data-table :headers="headers" :items="surveys">
+        <v-data-table :headers="headers" :items="surveys" item-key="">
             <template slot="items" slot-scope="props">
                 <td>{{ props.item.name }}</td>
                 <td>{{ props.item.criterion }}</td>
                 <td class="justify-center layout px-0">
                     <v-tooltip top>
                         <span>Weź udział</span>
-                        <v-btn slot="activator" flat :to="{name: 'main-surveys-details', params: {id: props.item.id}}">
+                        <v-btn
+                                slot="activator"
+                                flat
+                                :to="{ name: 'main-surveys-details', params: createSurveyDetailsCriteria(props.item) }"
+                        >
                             <v-icon>arrow_forward</v-icon>
                         </v-btn>
                     </v-tooltip>
@@ -43,6 +47,10 @@ export default class CurrentSurveys extends Vue {
         if (response) {
             this.surveys = response;
         }
+    }
+
+    public createSurveyDetailsCriteria(survey: ICurrentSurvey) {
+        return { surveyId: survey.id, criterionId: survey.criterion_id }
     }
 }
 </script>

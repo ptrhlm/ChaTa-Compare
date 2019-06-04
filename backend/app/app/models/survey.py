@@ -71,14 +71,15 @@ class SurveyInCreate(BaseModel):
 
 
 class CurrentSurvey(BaseModel):
-    name: str
     id: int
+    name: str
+    criterion_id: int
     criterion: str
 
 
 class SurveyDetails(BaseModel):
     name: str
     description: str
-    criteria: List[str] = []
-    assessment: str
-    dataCharacteristics: List[str] = []
+    criterion: str
+    type: SurveyType
+    data_characteristics: List[str]

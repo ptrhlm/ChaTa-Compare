@@ -43,16 +43,18 @@ export interface ISurveySummary {
     end_date: string;
     status: ESurveyStatus;
 }
+
 export interface ICurrentSurvey {
-    name: string;
-    criterion: string;
     id: number;
+    name: string;
+    criterion_id: string;
+    criterion: string;
 }
 
 export interface ISurveyDetails {
     name: string;
     description: string;
-	criteria: string[];
-    assessment: string;
-    dataCharacteristics: string[];
+    criterion: string;
+    type: ESurveyType;
+    data_characteristics: string[];
 }

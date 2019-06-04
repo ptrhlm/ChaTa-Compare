@@ -3,6 +3,7 @@ from typing import Any, List, Optional
 
 from app.db_models.answer import Answer
 from app.db_models.associations import survey_user_association, chart_survey_association
+from app.db_models.chart import Chart
 from app.db_models.criterion import Criterion
 from app.db_models.survey import Survey
 from app.db_models.task import Task
@@ -19,10 +20,12 @@ def get_multi(db_session, *, skip=0, limit=100) -> List[Optional[Survey]]:
     return db_session.query(Survey).offset(skip).limit(limit).all()
 
 
-def getCurrent_multi(db_session, *, skip=0,
-                     limit=100) -> List[Optional[Survey]]:
-    return db_session.query(Survey).filter(
-        Survey.status == SurveyStatus.OPEN).offset(skip).limit(limit).all()
+def get_current_multi(db_session, *, skip=0, limit=100) -> List[Optional[Survey]]:
+    return db_session.query(Survey)\
+        .filter(Survey.status == SurveyStatus.OPEN)\
+        .offset(skip)\
+        .limit(limit)\
+        .all()
 
 
 def create(db_session, *, survey_in: SurveyInCreate,
@@ -86,8 +89,10 @@ def remove_charts(db_session, *, survey: Survey, chart_ids: List[int]) -> None:
             chart_survey_association.c.chart_id.in_(chart_ids)))
 
 
-def get_charts_count(db_session, *, survey_id: int) -> int:
-    return survey.charts.count()  # TODO fix
+def get_charts_count(db_session, *, survey: Survey) -> int:
+    return db_session.query(Chart)\
+        .with_parent(survey)\
+        .count()
 
 
 def close(db_session, *, survey: Survey) -> Survey:
@@ -131,10 +136,18 @@ def is_participant(db_session, *, survey_id: int, user: User) -> bool:
     return result
 
 
-def get_criterions(db_session, *, survey_id: int, skip=0,
-                   limit=100) -> List[str]:
-    return db_session.query(Criterion).filter(
-        Criterion.survey_id == survey_id).offset(skip).limit(limit).all()
+def get_criterion(db_session, *, criterion_id: int) -> Optional[Criterion]:
+    return db_session.query(Criterion)\
+        .filter(Criterion.id == criterion_id)\
+        .first()
+
+
+def get_criteria(db_session, *, survey_id: int, skip=0, limit=100) -> List[Criterion]:
+    return db_session.query(Criterion)\
+        .filter(Criterion.survey_id == survey_id)\
+        .offset(skip)\
+        .limit(limit)\
+        .all()
 
 
 def get_tasks(db_session, *, survey_id: int, user: User, skip=0,

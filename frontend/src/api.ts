@@ -59,7 +59,7 @@ export const api = {
   async getCurrentSurveys(token: string) {
     return axios.get<ICurrentSurvey[]>(`${apiUrl}/api/v1/surveys/current`, authHeaders(token));
   },
-  async getSurveyDetails(token: string, survey_id: number) {
-    return axios.get<ISurveyDetails>(`${apiUrl}/api/v1/surveys/${survey_id}/details`, authHeaders(token));
+  async getSurveyDetails(token: string, surveyId: number, criterionId: number) {
+    return axios.get<ISurveyDetails>(`${apiUrl}/api/v1/surveys/${surveyId}/${criterionId}/details`, authHeaders(token));
   }
 };

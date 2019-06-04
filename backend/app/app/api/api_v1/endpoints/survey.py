@@ -102,39 +102,35 @@ async def list_current_surveys(
         db: Session = Depends(get_db),
         current_user: User = Depends(get_current_active_user)):
     """List all surveys"""
-    surveys = crud.survey.getCurrent_multi(db, skip=skip, limit=limit)
-    currentSurveys = []
-    for surv in surveys:
-        criteria = crud.survey.get_criterions(db, survey_id=surv.id)
+    surveys = crud.survey.get_current_multi(db, skip=skip, limit=limit)
+    current_surveys = []
+    for survey in surveys:
+        criteria = crud.survey.get_criteria(db, survey_id=survey.id)
         for criterion in criteria:
-            currentSurveys.append(
-                CurrentSurvey(id=surv.id,
-                              name=surv.name,
-                              criterion=criterion.name))
-    return currentSurveys
+            current_surveys.append(CurrentSurvey(id=survey.id,
+                                                 name=survey.name,
+                                                 criterion_id=criterion.id,
+                                                 criterion=criterion.name))
+    return current_surveys
 
 
-@router.get("/surveys/{id}/details",
+@router.get("/surveys/{survey_id}/{criterion_id}/details",
             tags=["survey"],
             response_model=SurveyDetails)
 async def survey_details(
-        id: int,
+        survey_id: int,
+        criterion_id: int,
         db: Session = Depends(get_db),
         current_user: User = Depends(get_current_active_user)):
     """Get survey details"""
-    survey = crud.survey.get(db, survey_id=id)
-    criteria = crud.survey.get_criterions(db, survey_id=id)
-    surveyCrits = []
-    for crit in criteria:
-        surveyCrits.append(crit.name)
-    chartsCount = crud.survey.get_charts_count(db, survey_id=id)
-    details = SurveyDetails(
-        name=survey.name,
-        description=survey.description,
-        criteria=surveyCrits,
-        dataCharacteristics=["Charts count: " + chartsCount],
-        assessment="comparative"
-        if survey.type == SurveyType.COMPARISON else "individual")
+    survey = crud.survey.get(db, survey_id=survey_id)
+    criterion = crud.survey.get_criterion(db, criterion_id=criterion_id)
+    charts_count = crud.survey.get_charts_count(db, survey=survey)
+    details = SurveyDetails(name=survey.name,
+                            description=survey.description,
+                            criterion=criterion.name,
+                            type=survey.type,
+                            data_characteristics=["Charts count: " + str(charts_count)])
     return details
 
 

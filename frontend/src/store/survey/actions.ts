@@ -66,14 +66,13 @@ export const actions = {
             await dispatchCheckApiError(context, error);
         }
     },
-    async actionGetSurveyDetails(context: MainContext, payload: { survey_id: number }) {
+    async actionGetSurveyDetails(context: MainContext, payload: { surveyId: number, criterionId: number }) {
         try {
-            const response = await api.getSurveyDetails(context.rootState.main.token, payload.survey_id);
+            const response = await api.getSurveyDetails(context.rootState.main.token, payload.surveyId, payload.criterionId);
             if (response) {
                 return response.data;
             }
         } catch (error) {
-            console.log(error);
             await dispatchCheckApiError(context, error);
         }
     }
