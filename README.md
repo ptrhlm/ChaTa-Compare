@@ -49,7 +49,7 @@ Authors:
 - Wiktor Gontarczyk ([@gontarczykw](https://github.com/gontarczykw))
 - Piotr Halama ([@ptrhlm](https://github.com/ptrhlm))
 - Andrzej Szczesiak ([@quarcom](https://github.com/quarcom))
-- Patryk Wróbel
+- Patryk Wróbel ([@lockwood371](https://github.com/lockwood371))
 
 Distributed under the GPL 3.0 license. See ``LICENSE`` for more information.
 
