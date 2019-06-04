@@ -11,4 +11,4 @@ def get_minio_client() -> Minio:
 
 
 def get_url(file_name: str) -> str:
-    return '/storage/' + config.MINIO_BUCKET + '/' + file_name
+    return '//' + config.SERVER_NAME + '/storage/' + config.MINIO_BUCKET + '/' + file_name

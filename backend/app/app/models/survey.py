@@ -6,8 +6,6 @@ from pydantic import BaseModel
 
 from app.models.user import User
 
-from typing import List
-
 
 class SurveyType(str, Enum):
     SINGLE = 'single'
@@ -55,6 +53,10 @@ class SurveyParticipant(BaseModel):
     experience: float = 0.0
 
 
+class SurveyParticipantIds(BaseModel):
+    participant_ids: List[int]
+
+
 class SurveyInCreate(BaseModel):
     name: str
     description: str
@@ -67,11 +69,13 @@ class SurveyInCreate(BaseModel):
     exp_required: bool = False
     min_answers_quality: float = 0.0
 
+
 class CurrentSurvey(BaseModel):
     name: str
     id: int
     criterion: str
-	
+
+
 class SurveyDetails(BaseModel):
     name: str
     description: str

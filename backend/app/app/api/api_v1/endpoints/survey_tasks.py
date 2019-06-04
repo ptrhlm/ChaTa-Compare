@@ -4,11 +4,13 @@ from fastapi import APIRouter, Depends, HTTPException, Path
 from sqlalchemy.orm import Session
 
 from app import crud
+from app.api.api_v1.endpoints.chart import db_chart_to_model_chart
 from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_user
 from app.db_models.user import User
 from app.models.answer import Answer
 from app.models.task import Task
+from app.models.survey import Survey
 
 router = APIRouter()
 
@@ -22,7 +24,10 @@ async def get_next_task(id: int,
     """Get next task for user"""
     if crud.survey.is_participant(db, survey_id=id, user=current_user):
         task = crud.survey.get_next_task(db, survey_id=id, user=current_user)
-        return task
+        return Task(id=task.id,
+                    chart1=db_chart_to_model_chart(task.chart1),
+                    chart2=db_chart_to_model_chart(task.chart2),
+                    survey=Survey(**task.survey.__dict__))
     else:
         raise HTTPException(
             status_code=403,

@@ -11,7 +11,7 @@ from app.api.utils.security import (get_current_active_researcher,
 from app.db_models.user import User
 from app.models.survey import (SurveyInCreate, Survey,
                                SurveyParticipant, SurveyStatus, SurveySummary,
-                               CurrentSurvey, SurveyDetails, SurveyType)
+                               CurrentSurvey, SurveyDetails, SurveyType, SurveyParticipantIds)
 
 router = APIRouter()
 
@@ -226,10 +226,12 @@ def list_participants(id: int,
 @router.post("/surveys/{id}/participants", tags=["survey"])
 async def add_participants(
         id: int,
-        participant_ids: List[int],
+        *,
+        participants: SurveyParticipantIds,
         db: Session = Depends(get_db),
         current_user: User = Depends(get_current_active_user)):
     """Add survey participants"""
+    participant_ids = participants.participant_ids
     if len(participant_ids) == 0:
         raise HTTPException(
             status_code=400,
@@ -256,10 +258,12 @@ async def add_participants(
 @router.delete("/surveys/{id}/participants", tags=["survey"])
 async def remove_participants(
         id: int,
-        participant_ids: List[SurveyParticipant],
+        *,
+        participants: SurveyParticipantIds,
         db: Session = Depends(get_db),
         current_user: User = Depends(get_current_active_user)):
     """Remove participants from survey"""
+    participant_ids = participants.participant_ids
     if len(participant_ids) == 0:
         raise HTTPException(
             status_code=400,
