@@ -7,6 +7,7 @@ import { commitAddChartInTask, commitClearChartsInTask } from './mutations';
 import { dispatchCheckApiError } from '../main/actions';
 import { commitAddNotification, commitRemoveNotification } from "@/store/main/mutations";
 import { ISurveyCreate } from "@/interfaces/survey";
+import { IChartSearchParams } from "@/interfaces/chart";
 
 type MainContext = ActionContext<SurveyState, State>;
 
@@ -35,6 +36,12 @@ export const actions = {
         } catch (error) {
             await dispatchCheckApiError(context, error);
         }
+    },
+    async actionSearchCharts(context: MainContext, payload: IChartSearchParams) {
+        return await callApi(context, api.searchChart, payload);
+    },
+    async actionGetChart(context: MainContext, payload: { chartId: number }) {
+        return await callApi(context, api.getChart, payload.chartId)
     },
     async actionLoadChartsInTask(context: MainContext, payload: { chartIds: number[] }) {
         commitClearChartsInTask(context);
@@ -72,10 +79,23 @@ export const actions = {
     }
 };
 
+async function callApi(context: MainContext, apiFunc, ...args) {
+    try {
+        const response = await apiFunc(context.rootState.main.token, ...args);
+        if (response) {
+            return response.data;
+        }
+    } catch (error) {
+        await dispatchCheckApiError(context, error);
+    }
+}
+
 const { dispatch } = getStoreAccessors<SurveyState, State>('');
 
 export const dispatchCreateSurvey = dispatch(actions.actionCreateSurvey);
 export const dispatchGetSurveySummaries = dispatch(actions.actionGetSurveySummaries);
+export const dispatchSearchCharts = dispatch(actions.actionSearchCharts);
+export const dispatchGetChart = dispatch(actions.actionGetChart);
 export const dispatchLoadCharts = dispatch(actions.actionLoadChartsInTask);
 export const dispatchLoadCurrentSurveys = dispatch(actions.actionLoadCurrentSurveys);
 export const dispatchGetSurveyDetails = dispatch(actions.actionGetSurveyDetails);

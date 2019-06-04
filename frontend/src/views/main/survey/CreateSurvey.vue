@@ -130,9 +130,10 @@
                                         <v-flex xs12 sm6 md12>
                                             <v-text-field
                                                     label="Search"
-                                                    placeholder="5"
+                                                    v-model="chartSearchQuery"
                                             ></v-text-field>
                                             <v-btn
+                                                    @click="searchCharts"
                                                     color="primary"
                                             >Search
                                             </v-btn>
@@ -144,12 +145,14 @@
                                         <h2>{{ name }}</h2>
 
                                         <v-flex xs12 sm6 md12>
-                                            <v-checkbox class="ma-0 pa-0" label="column"></v-checkbox>
-                                            <v-checkbox class="ma-0 pa-0" label="pie"></v-checkbox>
-                                            <v-checkbox class="ma-0 pa-0" label="linear"></v-checkbox>
-                                            <v-checkbox class="ma-0 pa-0" label="dot"></v-checkbox>
-                                            <v-checkbox class="ma-0 pa-0" label="donut"></v-checkbox>
-                                            <v-checkbox class="ma-0 pa-0" label="other"></v-checkbox>
+                                            <v-checkbox
+                                                    v-for="chartType in chartTypes"
+                                                    v-model="chartType.selected"
+                                                    :label="chartType.displayName"
+                                                    :key="chartType.name"
+                                                    class="ma-0 pa-0"
+                                            >
+                                            </v-checkbox>
                                         </v-flex>
                                     </v-flex>
                                 </v-layout>
@@ -161,15 +164,14 @@
                                             <v-container grid-list-sm fluid>
                                                 <v-layout row wrap>
                                                     <v-flex
-                                                            v-for="n in 9"
-                                                            :key="n"
+                                                            v-for="chartBase64 in chartsBase64"
                                                             xs
                                                             d-flex
                                                     >
                                                         <v-card flat tile class="d-flex">
                                                             <v-img
-                                                                    :src="`https://picsum.photos/500/300?image=${n * 5 + 10}`"
-                                                                    :lazy-src="`https://picsum.photos/10/6?image=${n * 5 + 10}`"
+                                                                    :src="chartBase64"
+                                                                    :lazy-src="`https://picsum.photos/10/6?image=10`"
                                                                     aspect-ratio="1"
                                                                     class="grey lighten-2"
                                                             >
@@ -194,9 +196,9 @@
 
                                     <v-text-field
                                             label="Use in survey"
-                                            placeholder="5"
+                                            v-model="numberOfSelectedCharts"
                                     ></v-text-field>
-                                    z 1455
+                                    of {{ numberOfCharts }}
                                 </v-layout>
 
 
@@ -225,7 +227,12 @@
 <script lang="ts">
     import { Component, Vue } from "vue-property-decorator";
     import { ESurveyStatus, ESurveyType, ISurveyCreate } from "@/interfaces/survey";
-    import { dispatchCreateSurvey } from "@/store/survey/actions";
+    import {
+        dispatchCreateSurvey,
+        dispatchGetChart,
+        dispatchSearchCharts
+    } from "@/store/survey/actions";
+    import { EChartType } from "@/interfaces/chart";
 
     @Component
     export default class CreateSurvey extends Vue {
@@ -239,6 +246,22 @@
         public type: ESurveyType = ESurveyType.Comparison;
         public answersPerTask: number = 5;
 
+        public chartSearchQuery: string = '';
+        public chartTypes = Object.keys(EChartType)
+            .map(value => {
+                const underscoreIdx = value.indexOf('_');
+                let displayName = value;
+                if (underscoreIdx > 0) {
+                    displayName = value.substr(0, underscoreIdx);
+                }
+                displayName = displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase();
+                return { name: value, displayName: displayName, selected: false }
+            });
+        public chartsBase64: string[] = [];
+        public numberOfSelectedCharts = 5;
+
+        private chartIds: number[] = [];
+
         public async navigateToMySurveys() {
             await this.createSurvey();
             this.$router.push('/main/surveys/my');
@@ -251,13 +274,36 @@
                 status: ESurveyStatus.Open,
                 type: this.type,
                 criteria: this.criteria,
-                charts_ids: [],
+                charts_ids: this.chartIds.slice(0, Math.min(this.numberOfCharts, this.numberOfSelectedCharts)),
                 answers_per_task: this.answersPerTask,
                 tasks_per_chart: 3,
                 exp_required: true,
                 min_answers_quality: 0.9,
             };
             await dispatchCreateSurvey(this.$store, newSurvey);
+        }
+
+        public async searchCharts() {
+            const searchedChartTypes = this.chartTypes
+                .filter(value => value.selected)
+                .map(value => EChartType[value.name]);
+            this.chartIds = await dispatchSearchCharts(this.$store,
+                { q: this.chartSearchQuery, chart_types: searchedChartTypes });
+            await this.refreshThumbnails();
+        }
+
+        private async refreshThumbnails() {
+            const filteredChartsIds = this.chartIds.slice(0, Math.min(this.numberOfCharts, 9));
+            const srcs: string[] = [];
+            for (const chartId of filteredChartsIds) {
+                const chart = await dispatchGetChart(this.$store, { chartId: chartId });
+                srcs.push('data:image/png;base64,' + chart.file_contents);
+            }
+            this.chartsBase64 = srcs;
+        }
+
+        get numberOfCharts() {
+            return this.chartIds.length;
         }
 
         public cancel() {

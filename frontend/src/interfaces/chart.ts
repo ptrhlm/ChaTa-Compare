@@ -24,3 +24,8 @@ export interface IChart {
     file_path: string;
     file_contents: string;
 }
+
+export interface IChartSearchParams {
+    q: string;
+    chart_types: EChartType[];
+}
