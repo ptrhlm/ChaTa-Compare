@@ -3,6 +3,7 @@
 
 [![Maintainability][codeclimate-maint-image]][codeclimate-maint-url]
 [![Test Coverage][codeclimate-cov-image]][codeclimate-cov-url]
+[![Build Status][travis-ci-image]][travis-ci-url]
 
 ## Requirements
 
@@ -59,3 +60,5 @@ Distributed under the GPL 3.0 license. See ``LICENSE`` for more information.
 [codeclimate-maint-url]: https://codeclimate.com/github/ptrhlm/ChaTa-Compare/maintainability
 [codeclimate-cov-image]: https://api.codeclimate.com/v1/badges/649680309ba0d6208981/test_coverage
 [codeclimate-cov-url]: https://codeclimate.com/github/ptrhlm/ChaTa-Compare/test_coverage
+[travis-ci-image]: https://travis-ci.com/ptrhlm/ChaTa-Compare.svg?branch=master
+[travis-ci-url]: https://travis-ci.com/ptrhlm/ChaTa-Compare
