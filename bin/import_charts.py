@@ -163,7 +163,8 @@ def main():
                     "file_name":
                     page["image"],
                     "file_contents":
-                    base64.b64encode(cropped_image_io.getvalue()).decode()
+                    base64.b64encode(cropped_image_io.getvalue()).decode(),
+                    "mimetype": "image/jpeg"
                 })
 
         except Exception as err:

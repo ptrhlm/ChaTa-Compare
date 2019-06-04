@@ -88,6 +88,7 @@ async def create_chart(
         m = hashlib.sha256()
         m.update(file_contents)
         file_hash = m.hexdigest()
+        content_type = chart.mimetype
 
         chart = chart.dict(exclude={'file_name', 'file_contents'})
         chart["file_ext"] = file_ext
@@ -100,6 +101,7 @@ async def create_chart(
             storage.put_object(config.MINIO_BUCKET,
                                file_hash + file_ext,
                                file_io,
+                               content_type=content_type,
                                length=len(file_contents))
         except Exception as err:
             logger.error(err)

@@ -37,6 +37,7 @@ class ChartInDB(ChartBase):
 class ChartInCreate(ChartBase):
     file_name: str
     file_contents: str
+    mimetype: str
 
 
 class Chart(ChartBase):
