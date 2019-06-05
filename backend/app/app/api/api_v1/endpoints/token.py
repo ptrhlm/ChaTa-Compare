@@ -13,19 +13,21 @@ from app.core.security import get_password_hash
 from app.db_models.user import User as DBUser
 from app.models.msg import Msg
 from app.models.token import Token
-from app.models.user import User
+from app.models.user import User, UserInCreate
 from app.utils import (
     generate_password_reset_token,
     send_reset_password_email,
     verify_password_reset_token,
 )
 
+from app.services.remote_auth_service import remote_authenticate
+
 router = APIRouter()
 
 
 @router.post("/login/access-token", response_model=Token, tags=["login"])
 def login_access_token(
-    db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()
+        db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()
 ):
     """
     OAuth2 compatible token login, get an access token for future requests
@@ -34,7 +36,15 @@ def login_access_token(
         db, email=form_data.username, password=form_data.password
     )
     if not user:
-        raise HTTPException(status_code=400, detail="Incorrect email or password")
+        remote_user = remote_authenticate(
+            username=form_data.username, password=form_data.password
+        )
+        if not remote_user:
+            raise HTTPException(status_code=400, detail="Incorrect email or password")
+        user = crud.user.get_by_email(db, email=form_data.username)
+        if not user:
+            user_in = UserInCreate(email=form_data.username, password=form_data.password)
+            user = crud.user.create(db, user_in=user_in)
     elif not crud.user.is_active(user):
         raise HTTPException(status_code=400, detail="Inactive user")
     access_token_expires = timedelta(minutes=config.ACCESS_TOKEN_EXPIRE_MINUTES)

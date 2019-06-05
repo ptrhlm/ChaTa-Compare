@@ -60,3 +60,5 @@ MINIO_SERVER = 'storage:9000'
 MINIO_BUCKET = os.getenv('MINIO_BUCKET')
 MINIO_ACCESS_KEY = os.getenv('MINIO_ACCESS_KEY')
 MINIO_SECRET_KEY = os.getenv('MINIO_SECRET_KEY')
+
+REMOTE_AUTH_ENDPOINT = 'http://3.122.251.13/api/users/login'
