@@ -50,8 +50,8 @@ export const api = {
   async getSurveySummaries(token: string, userId: number) {
     return axios.get<ISurveySummary[]>(`${apiUrl}/api/v1/surveys/summary?userId=${userId}`, authHeaders(token));
   },
-  async searchChart(token: string, data: IChartSearchParams) {
-    return axios.post<number[]>(`${apiUrl}/api/v1/charts/search`, data, authHeaders(token));
+  async searchChartIds(token: string, data: IChartSearchParams) {
+    return axios.post<number[]>(`${apiUrl}/api/v1/charts/search/ids`, data, authHeaders(token));
   },
   async getChart(token: string, chartId: number) {
     return axios.get<IChart>(`${apiUrl}/api/v1/charts/${chartId}`, authHeaders(token));

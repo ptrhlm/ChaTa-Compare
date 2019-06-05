@@ -37,8 +37,8 @@ export const actions = {
             await dispatchCheckApiError(context, error);
         }
     },
-    async actionSearchCharts(context: MainContext, payload: IChartSearchParams) {
-        return await callApi(context, api.searchChart, payload);
+    async actionSearchChartIds(context: MainContext, payload: IChartSearchParams) {
+        return await callApi(context, api.searchChartIds, payload);
     },
     async actionGetChart(context: MainContext, payload: { chartId: number }) {
         return await callApi(context, api.getChart, payload.chartId)
@@ -93,7 +93,7 @@ const { dispatch } = getStoreAccessors<SurveyState, State>('');
 
 export const dispatchCreateSurvey = dispatch(actions.actionCreateSurvey);
 export const dispatchGetSurveySummaries = dispatch(actions.actionGetSurveySummaries);
-export const dispatchSearchCharts = dispatch(actions.actionSearchCharts);
+export const dispatchSearchChartIds = dispatch(actions.actionSearchChartIds);
 export const dispatchGetChart = dispatch(actions.actionGetChart);
 export const dispatchLoadCharts = dispatch(actions.actionLoadChartsInTask);
 export const dispatchLoadCurrentSurveys = dispatch(actions.actionLoadCurrentSurveys);

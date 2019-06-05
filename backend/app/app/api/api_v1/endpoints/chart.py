@@ -49,7 +49,7 @@ def search_charts(
     return [db_chart_to_model_chart(chart) for chart in charts]
 
 
-@router.post("/charts/search/ids", tags=["charts"], response_model=List[Chart])
+@router.post("/charts/search/ids", tags=["charts"], response_model=List[int])
 def search_charts(
         db: Session = Depends(get_db),
         search_params: SearchParams = None,

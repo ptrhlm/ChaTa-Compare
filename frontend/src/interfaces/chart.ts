@@ -22,7 +22,6 @@ export interface IChart {
     y_axis_title: string;
     description: string;
     file_path: string;
-    file_contents: string;
 }
 
 export interface IChartSearchParams {

@@ -164,13 +164,13 @@
                                             <v-container grid-list-sm fluid>
                                                 <v-layout row wrap>
                                                     <v-flex
-                                                            v-for="chartBase64 in chartsBase64"
+                                                            v-for="chartUrl in chartUrls"
                                                             xs
                                                             d-flex
                                                     >
                                                         <v-card flat tile class="d-flex">
                                                             <v-img
-                                                                    :src="chartBase64"
+                                                                    :src="chartUrl"
                                                                     :lazy-src="`https://picsum.photos/10/6?image=10`"
                                                                     aspect-ratio="1"
                                                                     class="grey lighten-2"
@@ -230,7 +230,7 @@
     import {
         dispatchCreateSurvey,
         dispatchGetChart,
-        dispatchSearchCharts
+        dispatchSearchChartIds
     } from "@/store/survey/actions";
     import { EChartType } from "@/interfaces/chart";
 
@@ -257,7 +257,7 @@
                 displayName = displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase();
                 return { name: value, displayName: displayName, selected: false }
             });
-        public chartsBase64: string[] = [];
+        public chartUrls: string[] = [];
         public numberOfSelectedCharts = 5;
 
         private chartIds: number[] = [];
@@ -287,19 +287,19 @@
             const searchedChartTypes = this.chartTypes
                 .filter(value => value.selected)
                 .map(value => EChartType[value.name]);
-            this.chartIds = await dispatchSearchCharts(this.$store,
+            this.chartIds = await dispatchSearchChartIds(this.$store,
                 { q: this.chartSearchQuery, chart_types: searchedChartTypes });
             await this.refreshThumbnails();
         }
 
         private async refreshThumbnails() {
             const filteredChartsIds = this.chartIds.slice(0, Math.min(this.numberOfCharts, 9));
-            const srcs: string[] = [];
+            const urls: string[] = [];
             for (const chartId of filteredChartsIds) {
                 const chart = await dispatchGetChart(this.$store, { chartId: chartId });
-                srcs.push('data:image/png;base64,' + chart.file_contents);
+                urls.push(chart.file_path)
             }
-            this.chartsBase64 = srcs;
+            this.chartUrls = urls;
         }
 
         get numberOfCharts() {
