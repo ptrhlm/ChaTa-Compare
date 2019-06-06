@@ -3,6 +3,7 @@ import { apiUrl } from '@/env';
 import { IUserProfile, IUserProfileCreate, IUserProfileUpdate } from './interfaces';
 import { ISurvey, ISurveyCreate, ISurveySummary, ICurrentSurvey, ISurveyDetails } from "@/interfaces/survey";
 import { IChart, IChartSearchParams } from "@/interfaces/chart";
+import { ITask } from "@/interfaces/task";
 
 function authHeaders(token: string) {
   return {
@@ -61,5 +62,8 @@ export const api = {
   },
   async getSurveyDetails(token: string, surveyId: number, criterionId: number) {
     return axios.get<ISurveyDetails>(`${apiUrl}/api/v1/surveys/${surveyId}/${criterionId}/details`, authHeaders(token));
+  },
+  async getNextTask(token: string, surveyId: number, criterionId: number) {
+    return axios.get<ITask>(`${apiUrl}/api/v1/surveys/${surveyId}/${criterionId}/tasks/next`, authHeaders(token));
   }
 };

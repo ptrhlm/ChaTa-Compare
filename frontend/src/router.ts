@@ -110,7 +110,7 @@ export default new Router({
                       /* webpackChunkName: "main-surveys-details" */ './views/main/survey/SurveyDetails.vue'),
                 },
                 {
-                  path: ':id/task',
+                  path: ':surveyId/:criterionId/task',
                   name: 'main-surveys-task',
                   component: () => import(
                       /* webpackChunkName: "main-surveys-task" */ './views/main/survey/SurveyTask.vue'),

@@ -27,7 +27,8 @@
             <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn @click="cancel">Return</v-btn>
-                <v-btn :to="{name: 'main-surveys-task', params: {id: surveyId}, query: {singleMode: survey.type}}">Join now</v-btn>
+                <v-btn :to="{name: 'main-surveys-task', params: { surveyId: surveyId, criterionId: criterionId },
+                    query: { surveyType: survey.type }}">Join now</v-btn>
             </v-card-actions>
         </v-card>
     </v-container>

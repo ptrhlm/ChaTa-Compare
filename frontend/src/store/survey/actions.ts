@@ -75,7 +75,10 @@ export const actions = {
         } catch (error) {
             await dispatchCheckApiError(context, error);
         }
-    }
+    },
+    async actionGetNextTask(context: MainContext, payload: { surveyId: number, criterionId: number }) {
+        return await callApi(context, api.getNextTask, payload.surveyId, payload.criterionId)
+    },
 };
 
 async function callApi(context: MainContext, apiFunc, ...args) {
@@ -98,4 +101,4 @@ export const dispatchGetChart = dispatch(actions.actionGetChart);
 export const dispatchLoadCharts = dispatch(actions.actionLoadChartsInTask);
 export const dispatchLoadCurrentSurveys = dispatch(actions.actionLoadCurrentSurveys);
 export const dispatchGetSurveyDetails = dispatch(actions.actionGetSurveyDetails);
-
+export const dispatchGetNextTask = dispatch(actions.actionGetNextTask);

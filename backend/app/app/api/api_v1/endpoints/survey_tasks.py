@@ -15,19 +15,22 @@ from app.models.survey import Survey
 router = APIRouter()
 
 
-@router.get("/surveys/{id}/tasks/next",
+@router.get("/surveys/{survey_id}/{criterion_id}/tasks/next",
             tags=["survey", "task"],
             response_model=Task)
-async def get_next_task(id: int,
+async def get_next_task(survey_id: int,
+                        criterion_id: int,
                         db: Session = Depends(get_db),
                         current_user: User = Depends(get_current_active_user)):
     """Get next task for user"""
-    if crud.survey.is_participant(db, survey_id=id, user=current_user):
-        task = crud.survey.get_next_task(db, survey_id=id, user=current_user)
+    if crud.survey.is_participant(db, survey_id=survey_id, user=current_user):
+        task = crud.survey.get_next_task(db, survey_id=survey_id, user=current_user)
+        criterion = crud.survey.get_criterion(db, criterion_id=criterion_id)
         return Task(id=task.id,
                     chart1=db_chart_to_model_chart(task.chart1),
                     chart2=db_chart_to_model_chart(task.chart2),
-                    survey=Survey(**task.survey.__dict__))
+                    survey=Survey(**task.survey.__dict__),
+                    criterion=criterion.name)
     else:
         raise HTTPException(
             status_code=403,
