@@ -8,6 +8,7 @@ import { dispatchCheckApiError } from '../main/actions';
 import { commitAddNotification, commitRemoveNotification } from "@/store/main/mutations";
 import { ISurveyCreate } from "@/interfaces/survey";
 import { IChartSearchParams } from "@/interfaces/chart";
+import { IAnswer } from "@/interfaces/answer";
 
 type MainContext = ActionContext<SurveyState, State>;
 
@@ -79,6 +80,10 @@ export const actions = {
     async actionGetNextTask(context: MainContext, payload: { surveyId: number, criterionId: number }) {
         return await callApi(context, api.getNextTask, payload.surveyId, payload.criterionId)
     },
+    async actionSaveAnswer(context: MainContext,
+                           payload: { surveyId: number, criterionId: number, taskId: number, data: IAnswer }) {
+        await callApi(context, api.saveAnswer, payload.surveyId, payload.criterionId, payload.taskId, payload.data)
+    },
 };
 
 async function callApi(context: MainContext, apiFunc, ...args) {
@@ -102,3 +107,4 @@ export const dispatchLoadCharts = dispatch(actions.actionLoadChartsInTask);
 export const dispatchLoadCurrentSurveys = dispatch(actions.actionLoadCurrentSurveys);
 export const dispatchGetSurveyDetails = dispatch(actions.actionGetSurveyDetails);
 export const dispatchGetNextTask = dispatch(actions.actionGetNextTask);
+export const dispatchSaveAnswer = dispatch(actions.actionSaveAnswer);

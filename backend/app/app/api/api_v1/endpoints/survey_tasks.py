@@ -24,7 +24,10 @@ async def get_next_task(survey_id: int,
                         current_user: User = Depends(get_current_active_user)):
     """Get next task for user"""
     if crud.survey.is_participant(db, survey_id=survey_id, user=current_user):
-        task = crud.survey.get_next_task(db, survey_id=survey_id, user=current_user)
+        task = crud.survey.get_next_task(db,
+                                         survey_id=survey_id,
+                                         criterion_id=criterion_id,
+                                         user=current_user)
         criterion = crud.survey.get_criterion(db, criterion_id=criterion_id)
         return Task(id=task.id,
                     chart1=db_chart_to_model_chart(task.chart1),
@@ -38,19 +41,21 @@ async def get_next_task(survey_id: int,
         )
 
 
-@router.post("/surveys/{id}/tasks/{task_id}/answers", tags=["survey", "task"])
-async def save_answer(id: int,
+@router.post("/surveys/{survey_id}/{criterion_id}/tasks/{task_id}/answers", tags=["survey", "task"])
+async def save_answer(survey_id: int,
+                      criterion_id: int,
                       task_id: int,
                       answer: Answer,
                       db: Session = Depends(get_db),
                       current_user: User = Depends(get_current_active_user)):
     """Save user's answer for the task"""
-    if crud.survey.is_participant(db, survey_id=id, user=current_user):
+    if crud.survey.is_participant(db, survey_id=survey_id, user=current_user):
+        score = answer.score if answer.score else answer.decision
         crud.survey.save_answer(db,
-                                survey_id=id,
+                                criterion_id=criterion_id,
                                 task_id=task_id,
-                                user=current_user,
-                                answer=answer)
+                                score=score,
+                                user=current_user)
     else:
         raise HTTPException(
             status_code=403,

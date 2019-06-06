@@ -161,26 +161,32 @@ def get_task(db_session, *, survey_id: int, task_id: int, user: User) -> Task:
         Task.id == task_id).first()
 
 
-def get_next_task(db_session, *, survey_id: int, user: User) -> Task:
+def get_next_task(db_session, *, survey_id: int,  criterion_id: int,
+                  user: User) -> Task:
     survey = get(db_session, survey_id=survey_id)
     subquery = db_session.query(
         Answer.task_id,
         func.count(Answer.id).label("task_num"),
         func.sum(case([(Answer.user_id == user.id, 1)], else_=0)).label("checked")
-    ).select_from(Answer).group_by("task_id").subquery()
-    task = db_session.query(Task).outerjoin(subquery).first()
+    ).select_from(Answer) \
+        .filter(Answer.criterion_id == criterion_id)\
+        .group_by("task_id")\
+        .subquery()
+    task = db_session.query(Task) \
+        .filter(Task.survey_id == survey_id)\
+        .outerjoin(subquery)\
+        .first()
     # .filter(Task.survey_id == survey_id).filter(
     #                         subquery.c.task_num < survey.answers_per_task).first()
-    logging.error(task.chart1)
     return task
 
 
-def save_answer(db_session, *, survey_id: int, task_id: int, user: User,
-                answer) -> None:
+def save_answer(db_session, *, criterion_id: int, task_id: int,
+                score: int, user: User) -> None:
     answer = Answer(task_id=task_id,
-                    user=user,
-                    score=answer.score,
-                    chosen_chart_id=answer.answer)
+                    criterion_id=criterion_id,
+                    score=score,
+                    user_id=user.id)
     db_session.add(answer)
     db_session.commit()
 

@@ -19,19 +19,25 @@
                 </v-layout>
             </v-container>
             <v-container v-if="type === 'single'">
-                <span class="mr-2">{{ task.criterion }} ({{ rating1 }})</span>
-                <v-rating v-model="rating1" hover length="10" large></v-rating>
+                <span class="mr-2">{{ task.criterion }} ({{ answerSingle }})</span>
+                <v-rating v-model="answerSingle" hover length="10" large></v-rating>
             </v-container>
             <v-container v-else>
                 {{ task.criterion }}
                 <v-radio-group row>
-                    <v-radio label="Left" value="radio-1"></v-radio>
-                    <v-radio label="Right" value="radio-2"></v-radio>
+                    <v-radio-group v-model="answerComparision" row>
+                        <v-radio
+                                v-for="option in singleModeAnswerOptions"
+                                :key="option.value"
+                                :label="option.name"
+                                :value="option.value"
+                        ></v-radio>
+                    </v-radio-group>
                 </v-radio-group>
             </v-container>
             <v-card-actions class="justify-center">
-                <v-btn @click="nextTask">Następny</v-btn>
-                <v-btn :to="{name: 'main-surveys-current'}">Przerwij badanie</v-btn>
+                <v-btn @click="nextTask">Next</v-btn>
+                <v-btn :to="{name: 'main-surveys-current'}">Quit</v-btn>
             </v-card-actions>
         </v-card>
     </v-container>
@@ -39,23 +45,47 @@
 
 <script lang="ts">
     import { Component, Vue } from "vue-property-decorator";
-    import { dispatchGetChart, dispatchGetNextTask, dispatchLoadCharts } from '@/store/survey/actions';
+    import {
+        dispatchGetChart,
+        dispatchGetNextTask,
+        dispatchLoadCharts,
+        dispatchSaveAnswer
+    } from '@/store/survey/actions';
     import { ESurveyType } from "@/interfaces/survey";
     import { ITask } from "@/interfaces/task";
+    import { IAnswer } from "@/interfaces/answer";
 
     @Component
     export default class SurveyTask extends Vue {
-        public rating1 = 0;
-        public rating2 = 0;
-
         public task: ITask | null = null;
+        public answerSingle: number | null = null;
+        public answerComparision: number | null = null;
+        public singleModeAnswerOptions = [
+            { name: 'Left', value: 1},
+            { name:'Right', value: 2}
+        ];
 
         public async created(): Promise<void> {
-            await this.nextTask();
+            await this.getNextTask();
+        }
+
+        public async getNextTask(): Promise<void> {
+            this.task = await dispatchGetNextTask(this.$store, { surveyId: this.surveyId, criterionId: this.criterionId });
         }
 
         public async nextTask(): Promise<void> {
-            this.task = await dispatchGetNextTask(this.$store, { surveyId: this.surveyId, criterionId: this.criterionId });
+            if (this.task !== null) {
+                const task = this.task;
+                this.task = null;
+                await this.saveAnswer(task);
+                await this.getNextTask();
+            }
+        }
+
+        private async saveAnswer(task: ITask) {
+            const answer : IAnswer = { id: null, decision:this.answerComparision, score: this.answerSingle };
+            const payload = { surveyId: this.surveyId, criterionId: this.criterionId, taskId: task.id, data: answer };
+            await dispatchSaveAnswer(this.$store, payload);
         }
 
         get surveyId(): number {

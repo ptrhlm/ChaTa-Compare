@@ -4,6 +4,7 @@ import { IUserProfile, IUserProfileCreate, IUserProfileUpdate } from './interfac
 import { ISurvey, ISurveyCreate, ISurveySummary, ICurrentSurvey, ISurveyDetails } from "@/interfaces/survey";
 import { IChart, IChartSearchParams } from "@/interfaces/chart";
 import { ITask } from "@/interfaces/task";
+import { IAnswer } from "@/interfaces/answer";
 
 function authHeaders(token: string) {
   return {
@@ -65,5 +66,9 @@ export const api = {
   },
   async getNextTask(token: string, surveyId: number, criterionId: number) {
     return axios.get<ITask>(`${apiUrl}/api/v1/surveys/${surveyId}/${criterionId}/tasks/next`, authHeaders(token));
-  }
+  },
+  async saveAnswer(token: string, surveyId: number, criterionId: number, taskId: number, data: IAnswer) {
+    return axios.post(`${apiUrl}/api/v1/surveys/${surveyId}/${criterionId}/tasks/${taskId}/answers`, data,
+        authHeaders(token));
+  },
 };

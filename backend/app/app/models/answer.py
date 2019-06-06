@@ -8,12 +8,8 @@ from app.models.task import Task
 
 
 class Answer(BaseModel):
-    id: int
-    task: Task
-    # criterion: Criterion
+    id: Optional[int]
 
     # Only one of these is present at time
-    answer: Optional[int]
+    decision: Optional[int]
     score: Optional[int]
-
-    user: User
