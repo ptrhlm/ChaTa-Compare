@@ -173,11 +173,11 @@ def get_next_task(db_session, *, survey_id: int,  criterion_id: int,
         .group_by("task_id")\
         .subquery()
     task = db_session.query(Task) \
-        .filter(Task.survey_id == survey_id)\
         .outerjoin(subquery)\
-        .first()
-    # .filter(Task.survey_id == survey_id).filter(
-    #                         subquery.c.task_num < survey.answers_per_task).first()
+        .filter(Task.survey_id == survey_id).filter(
+        ((subquery.c.task_num < survey.answers_per_task) | (subquery.c.task_num == None)) &
+        ((subquery.c.checked == 0) | (subquery.c.checked == None))
+    ).first()
     return task
 
 
