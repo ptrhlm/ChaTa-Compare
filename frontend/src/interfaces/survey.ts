@@ -57,4 +57,5 @@ export interface ISurveyDetails {
     criterion: string;
     type: ESurveyType;
     data_characteristics: string[];
+    current_user_participant: boolean | null;
 }

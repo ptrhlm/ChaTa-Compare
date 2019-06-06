@@ -64,6 +64,10 @@ export const api = {
   async getSurveyDetails(token: string, surveyId: number, criterionId: number) {
     return axios.get<ISurveyDetails>(`${apiUrl}/api/v1/surveys/${surveyId}/${criterionId}/details`, authHeaders(token));
   },
+  async joinSurvey(token: string, surveyId: number, userId: number) {
+    const data = { participant_ids: [userId] };
+    return axios.post(`${apiUrl}/api/v1/surveys/${surveyId}/participants`, data, authHeaders(token));
+  },
   async getNextTask(token: string, surveyId: number, criterionId: number) {
     return axios.get<ITask>(`${apiUrl}/api/v1/surveys/${surveyId}/${criterionId}/tasks/next`, authHeaders(token));
   },

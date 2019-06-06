@@ -1,9 +1,6 @@
 from datetime import date
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, Path, Query
-from sqlalchemy.orm import Session
-
 from app import crud
 from app.api.utils.db import get_db
 from app.api.utils.security import (get_current_active_researcher,
@@ -11,7 +8,9 @@ from app.api.utils.security import (get_current_active_researcher,
 from app.db_models.user import User
 from app.models.survey import (SurveyInCreate, Survey,
                                SurveyParticipant, SurveyStatus, SurveySummary,
-                               CurrentSurvey, SurveyDetails, SurveyType, SurveyParticipantIds)
+                               CurrentSurvey, SurveyDetails, SurveyParticipantIds)
+from fastapi import APIRouter, Depends, HTTPException, Path, Query
+from sqlalchemy.orm import Session
 
 router = APIRouter()
 
@@ -126,11 +125,13 @@ async def survey_details(
     survey = crud.survey.get(db, survey_id=survey_id)
     criterion = crud.survey.get_criterion(db, criterion_id=criterion_id)
     charts_count = crud.survey.get_charts_count(db, survey=survey)
+    current_user_participant = crud.survey.is_participant(db, survey_id=survey_id, user=current_user)
     details = SurveyDetails(name=survey.name,
                             description=survey.description,
                             criterion=criterion.name,
                             type=survey.type,
-                            data_characteristics=["Charts count: " + str(charts_count)])
+                            data_characteristics=["Charts count: " + str(charts_count)],
+                            current_user_participant=current_user_participant)
     return details
 
 

@@ -77,6 +77,9 @@ export const actions = {
             await dispatchCheckApiError(context, error);
         }
     },
+    async actionJoinSurvey(context: MainContext, payload: { surveyId: number, userId: number }) {
+        return await callApi(context, api.joinSurvey, payload.surveyId, payload.userId)
+    },
     async actionGetNextTask(context: MainContext, payload: { surveyId: number, criterionId: number }) {
         return await callApi(context, api.getNextTask, payload.surveyId, payload.criterionId)
     },
@@ -106,5 +109,6 @@ export const dispatchGetChart = dispatch(actions.actionGetChart);
 export const dispatchLoadCharts = dispatch(actions.actionLoadChartsInTask);
 export const dispatchLoadCurrentSurveys = dispatch(actions.actionLoadCurrentSurveys);
 export const dispatchGetSurveyDetails = dispatch(actions.actionGetSurveyDetails);
+export const dispatchJoinSurvey = dispatch(actions.actionJoinSurvey);
 export const dispatchGetNextTask = dispatch(actions.actionGetNextTask);
 export const dispatchSaveAnswer = dispatch(actions.actionSaveAnswer);

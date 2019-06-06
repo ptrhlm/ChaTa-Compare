@@ -83,3 +83,4 @@ class SurveyDetails(BaseModel):
     criterion: str
     type: SurveyType
     data_characteristics: List[str]
+    current_user_participant: bool

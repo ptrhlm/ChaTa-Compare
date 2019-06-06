@@ -27,8 +27,12 @@
             <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn @click="cancel">Return</v-btn>
-                <v-btn :to="{name: 'main-surveys-task', params: { surveyId: surveyId, criterionId: criterionId },
-                    query: { surveyType: survey.type }}">Join now</v-btn>
+                <v-btn
+                        v-if="survey"
+                        @click="enterSurvey"
+                >
+                    {{ survey.current_user_participant ? 'Resume' : 'Join now' }}
+                </v-btn>
             </v-card-actions>
         </v-card>
     </v-container>
@@ -36,8 +40,10 @@
 
 <script lang="ts">
     import { Component, Vue } from "vue-property-decorator";
-    import { dispatchGetSurveyDetails } from '@/store/survey/actions';
+    import { dispatchGetSurveyDetails, dispatchJoinSurvey } from '@/store/survey/actions';
     import { ESurveyType, ISurveyDetails } from "@/interfaces/survey";
+    import { IUserProfile } from "@/interfaces";
+    import { readUserProfile } from "@/store/main/getters";
 
     @Component
     export default class SurveyDetails extends Vue {
@@ -46,7 +52,8 @@
             description: '',
             criterion: '',
             type: ESurveyType.Comparison,
-            data_characteristics: []
+            data_characteristics: [],
+            current_user_participant: null,
         };
 
         public async created() {
@@ -57,12 +64,26 @@
             }
         }
 
+        public async enterSurvey() {
+            if (!this.survey.current_user_participant) {
+                await dispatchJoinSurvey(this.$store, { surveyId: this.surveyId, userId: this.userProfile.id });
+            }
+            this.$router.push({
+                name: 'main-surveys-task',
+                params: { surveyId: this.surveyId + '', criterionId: this.criterionId + '' }
+            });
+        }
+
         get surveyId() {
             return +this.$router.currentRoute.params.surveyId;
         }
 
         get criterionId() {
             return +this.$router.currentRoute.params.criterionId;
+        }
+
+        get userProfile(): IUserProfile {
+            return <IUserProfile>readUserProfile(this.$store);
         }
 
         public cancel() {

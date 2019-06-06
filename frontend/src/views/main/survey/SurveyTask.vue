@@ -18,7 +18,7 @@
                     </v-flex>
                 </v-layout>
             </v-container>
-            <v-container v-if="type === 'single'">
+            <v-container v-if="task.survey.type === 'single'">
                 <span class="mr-2">{{ task.criterion }} ({{ answerSingle }})</span>
                 <v-rating v-model="answerSingle" hover length="10" large></v-rating>
             </v-container>
@@ -45,13 +45,7 @@
 
 <script lang="ts">
     import { Component, Vue } from "vue-property-decorator";
-    import {
-        dispatchGetChart,
-        dispatchGetNextTask,
-        dispatchLoadCharts,
-        dispatchSaveAnswer
-    } from '@/store/survey/actions';
-    import { ESurveyType } from "@/interfaces/survey";
+    import { dispatchGetNextTask, dispatchSaveAnswer } from '@/store/survey/actions';
     import { ITask } from "@/interfaces/task";
     import { IAnswer } from "@/interfaces/answer";
 
@@ -94,10 +88,6 @@
 
         get criterionId(): number {
             return +this.$router.currentRoute.params.criterionId;
-        }
-
-        get type(): ESurveyType {
-            return <ESurveyType>this.$router.currentRoute.query.surveyType;
         }
     }
 </script>
