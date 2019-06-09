@@ -9,6 +9,12 @@ def getenv_boolean(var_name, default_value=False):
     return result
 
 
+def getenv_required(var_name: str) -> str:
+    result = os.getenv(var_name)
+    assert result, f"Missing environment variable: {var_name}"
+    return result
+
+
 API_V1_STR = "/api/v1"
 
 SECRET_KEY = os.getenvb(b"SECRET_KEY")
@@ -25,7 +31,7 @@ BACKEND_CORS_ORIGINS = os.getenv(
 # a string of origins separated by commas, e.g:
 # "http://localhost, http://localhost:8080, http://local.dockertoolbox.tiangolo.com"
 
-PROJECT_NAME = os.getenv("PROJECT_NAME")
+PROJECT_NAME = getenv_required("PROJECT_NAME")
 SENTRY_DSN = os.getenv("SENTRY_DSN")
 
 POSTGRES_SERVER = os.getenv("POSTGRES_SERVER")
