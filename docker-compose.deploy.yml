@@ -1,35 +1,76 @@
-version: '3.3'
+version: '3.7'
 
 services:
   backend:
-    build: 
-      context: ./backend
-      dockerfile: backend.dockerfile
+    image: ptrhlm/chata-compare-backend
     deploy:
       labels:
         - traefik.frontend.rule=PathPrefix:/api,/docs,/redoc
         - traefik.enable=true
         - traefik.port=80
         - traefik.tags=${TRAEFIK_TAG}
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    depends_on:
+      - db
+      - queue
+      - storage
+    env_file:
+      - env-postgres.env
+      - env-backend.env
+      - env-minio.env
+    environment:
+      - SERVER_NAME=${DOMAIN}
+      - SERVER_HOST=https://${DOMAIN}
+    networks:
+      - ${TRAEFIK_PUBLIC_NETWORK}
+      - default
 
   celeryworker:
-    build:
-      context: ./backend
-      dockerfile: celeryworker.dockerfile
+    image: ptrhlm/chata-compare-worker
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    depends_on:
+      - db
+      - queue
+      - storage
+    env_file:
+      - env-postgres.env
+      - env-backend.env
+      - env-minio.env
+    environment:
+      - SERVER_HOST=https://${DOMAIN}
+    networks:
+      - default
 
   frontend:
-    build: 
-      context: ./frontend
-      args:
-          FRONTEND_ENV: ${FRONTEND_ENV-production}
+    image: ptrhlm/chata-compare-frontend
     deploy:
       labels:
         - traefik.frontend.rule=PathPrefix:/
         - traefik.enable=true
         - traefik.port=80
         - traefik.tags=${TRAEFIK_TAG}
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    networks:
+      - ${TRAEFIK_PUBLIC_NETWORK}
+      - default
 
   proxy:
+    image: traefik:v1.7
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     command: --docker \
       --docker.swarmmode \
       --docker.watch \
@@ -61,65 +102,113 @@ services:
         # - "traefik.servicehttps.frontend.redirect.replacement=https://www.${DOMAIN}/$$3"
         # To redirect from www to non-www un-comment the line below
         # - "traefik.servicehttps.frontend.redirect.replacement=https://${DOMAIN}/$$3"
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
       placement:
         constraints:
           - node.role == manager
     networks:
       - ${TRAEFIK_PUBLIC_NETWORK}
       - default
+    ports:
+      - "80:80"
+      - "127.0.0.1:8080:8080"
 
   db:
+    image: postgres:11
+    env_file:
+      - env-postgres.env
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
     volumes:
       - app-db-data:/var/lib/postgresql/data/pgdata
     deploy:
-      placement:
-        constraints:
-          - node.labels.${STACK_NAME}.app-db-data == true
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    networks:
+      - default
 
   pgadmin:
+    image: dpage/pgadmin4
+    depends_on:
+      - db
+    env_file:
+      - env-pgadmin.env
     deploy:
-      labels:
-        - traefik.frontend.rule=Host:pgadmin.${DOMAIN}
-        - traefik.enable=true
-        - traefik.port=5050
-        - traefik.tags=${TRAEFIK_PUBLIC_TAG}
-        - traefik.docker.network=${TRAEFIK_PUBLIC_NETWORK}
-        # Traefik service that listens to HTTP
-        - traefik.redirectorservice.frontend.entryPoints=http
-        - traefik.redirectorservice.frontend.redirect.entryPoint=https
-        # Traefik service that listens to HTTPS
-        - traefik.webservice.frontend.entryPoints=https
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    volumes:
+      - pgadmin-config:/var/lib/pgadmin
+    ports:
+      - '127.0.0.1:5050:5050'
     networks:
       - ${TRAEFIK_PUBLIC_NETWORK}
       - default
 
   flower:
-    deploy:
-      labels:
-        - traefik.frontend.rule=Host:flower.${DOMAIN}
-        - traefik.enable=true
-        - traefik.port=5555
-        - traefik.tags=${TRAEFIK_PUBLIC_TAG}
-        - traefik.docker.network=${TRAEFIK_PUBLIC_NETWORK}
-        # Traefik service that listens to HTTP
-        - traefik.redirectorservice.frontend.entryPoints=http
-        - traefik.redirectorservice.frontend.redirect.entryPoint=https
-        # Traefik service that listens to HTTPS
-        - traefik.webservice.frontend.entryPoints=https
+    depends_on:
+      - queue
+    image: totem/celery-flower-docker
+    env_file:
+      - env-flower.env
+    ports:
+      - '127.0.0.1:5555:5555'
     networks:
       - ${TRAEFIK_PUBLIC_NETWORK}
       - default
 
+  queue:
+    image: rabbitmq:3
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    networks:
+      - default
+
   storage:
+    image: minio/minio
+    env_file:
+      - env-minio.env
+    command: server /data
     volumes:
-      minio-data: /data
-      minio-config: /root/.minio
-  
+      - minio-data:/data
+      - minio-config:/root/.minio
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      labels:
+        - traefik.frontend.rule=PathPrefixStrip:/storage
+        - traefik.enable=true
+        - traefik.port=9000
+        - traefik.tags=${TRAEFIK_TAG}
+    ports:
+      - '127.0.0.1:9000:9000'
+    networks:
+      - ${TRAEFIK_PUBLIC_NETWORK}
+      - default
+
 networks:
   traefik-public:
     external: true
+  default:
 
 volumes:
   app-db-data:
+  pgadmin-config:
   minio-data:
   minio-config:
