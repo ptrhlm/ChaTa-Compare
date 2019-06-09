@@ -45,7 +45,7 @@ export default class AdminUsers extends Vue {
       align: 'left',
     },
     {
-      text: 'Email',
+      text: 'Username',
       sortable: true,
       value: 'email',
       align: 'left',

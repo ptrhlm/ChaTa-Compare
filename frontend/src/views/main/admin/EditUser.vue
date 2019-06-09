@@ -23,8 +23,7 @@
               <v-text-field label="Full Name"
                             v-model="fullName"
                             required></v-text-field>
-              <v-text-field label="E-mail"
-                            type="email"
+              <v-text-field label="Username"
                             v-model="email"
                             data-vv-name="email"
                             :error-messages="errors.collect('email')"

@@ -17,10 +17,9 @@
               required
             ></v-text-field>
             <v-text-field
-              label="E-mail"
-              type="email"
+              label="Username"
               v-model="email"
-              v-validate="'required|email'"
+              v-validate="'required'"
               data-vv-name="email"
               :error-messages="errors.collect('email')"
               required
