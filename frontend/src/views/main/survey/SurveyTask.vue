@@ -11,6 +11,9 @@
                 <div class="headline primary--text">{{ task.survey.name }}</div>
             </v-card-title>
             <v-container fluid>
+                <v-layout align-center justify-center row mb-2>
+                    <h1>{{ task.criterion }}</h1>
+                </v-layout>
                 <v-layout justify-space-around>
                     <v-flex xs5>
                         <v-hover>
