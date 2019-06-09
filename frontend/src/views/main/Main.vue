@@ -15,15 +15,31 @@
         </v-list>
         <v-divider></v-divider>
         <v-list>
-          <v-subheader>Charts</v-subheader>
-          <v-list-tile v-for="navItem in navigationItems" :key="navItem.text" :to="navItem.toPath">
-            <v-list-tile-action>
-              <v-icon>{{ navItem.icon }}</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title>{{ navItem.text }}</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
+            <v-subheader>Charts</v-subheader>
+            <v-list-tile key="Current surveys" to="/main/surveys/current">
+                <v-list-tile-action>
+                    <v-icon>thumbs_up_down</v-icon>
+                </v-list-tile-action>
+                <v-list-tile-content>
+                    <v-list-tile-title>Current surveys</v-list-tile-title>
+                </v-list-tile-content>
+            </v-list-tile>
+            <v-list-tile key="Create survey" to="/main/surveys/create" v-show="hasResearcherPermission">
+                <v-list-tile-action>
+                    <v-icon>add_circle_outlined</v-icon>
+                </v-list-tile-action>
+                <v-list-tile-content>
+                    <v-list-tile-title>Create survey</v-list-tile-title>
+                </v-list-tile-content>
+            </v-list-tile>
+            <v-list-tile key="My surveys" to="/main/surveys/my">
+                <v-list-tile-action>
+                    <v-icon>insert_chart_outlined</v-icon>
+                </v-list-tile-action>
+                <v-list-tile-content>
+                    <v-list-tile-title>My surveys</v-list-tile-title>
+                </v-list-tile-content>
+            </v-list-tile>
         </v-list>
         <v-divider></v-divider>
         <v-list>
@@ -137,7 +153,7 @@
 import { Vue, Component } from 'vue-property-decorator';
 
 import { appName } from '@/env';
-import { readDashboardMiniDrawer, readDashboardShowDrawer, readHasAdminAccess } from '@/store/main/getters';
+import { readDashboardMiniDrawer, readDashboardShowDrawer, readHasAdminAccess, readHasResearcherPermission } from '@/store/main/getters';
 import { commitSetDashboardShowDrawer, commitSetDashboardMiniDrawer } from '@/store/main/mutations';
 import { dispatchUserLogOut } from '@/store/main/actions';
 
@@ -152,11 +168,6 @@ const routeGuardMain = async (to, from, next) => {
 @Component
 export default class Main extends Vue {
   public appName = appName;
-  public navigationItems = [
-    {icon: "thumbs_up_down", text: "Current surveys", toPath: "/main/surveys/current"},
-    {icon: "add_circle_outlined", text: "Create survey", toPath: "/main/surveys/create"},
-    {icon: "insert_chart_outlined", text: "My surveys", toPath: "/main/surveys/my"},
-  ];
 
   public beforeRouteEnter(to, from, next) {
     routeGuardMain(to, from, next);
@@ -194,6 +205,10 @@ export default class Main extends Vue {
 
   public get hasAdminAccess() {
     return readHasAdminAccess(this.$store);
+  }
+
+  public get hasResearcherPermission() {
+      return readHasResearcherPermission(this.$store);
   }
 
   public async logout() {

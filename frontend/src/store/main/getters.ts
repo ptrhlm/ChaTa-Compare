@@ -8,6 +8,11 @@ export const getters = {
             state.userProfile &&
             state.userProfile.is_superuser && state.userProfile.is_active);
     },
+    hasResearcherPermission: (state: MainState) => {
+        return (
+            state.userProfile &&
+            state.userProfile.is_researcher && state.userProfile.is_active);
+    },
     loginError: (state: MainState) => state.logInError,
     dashboardShowDrawer: (state: MainState) => state.dashboardShowDrawer,
     dashboardMiniDrawer: (state: MainState) => state.dashboardMiniDrawer,
@@ -27,3 +32,4 @@ export const readLoginError = read(getters.loginError);
 export const readToken = read(getters.token);
 export const readUserProfile = read(getters.userProfile);
 export const readFirstNotification = read(getters.firstNotification);
+export const readHasResearcherPermission = read(getters.hasResearcherPermission);

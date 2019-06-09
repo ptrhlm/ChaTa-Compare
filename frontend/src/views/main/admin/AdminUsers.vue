@@ -8,21 +8,22 @@
       <v-btn color="primary" to="/main/admin/users/create">Create User</v-btn>
     </v-toolbar>
     <v-data-table :headers="headers" :items="users">
-      <template slot="items" slot-scope="props">
-        <td>{{ props.item.name }}</td>
-        <td>{{ props.item.email }}</td>
-        <td>{{ props.item.full_name }}</td>
-        <td><v-icon v-if="props.item.is_active">checkmark</v-icon></td>
-        <td><v-icon v-if="props.item.is_superuser">checkmark</v-icon></td>
-        <td class="justify-center layout px-0">
-          <v-tooltip top>
-            <span>Edit</span>
-            <v-btn slot="activator" flat :to="{name: 'main-admin-users-edit', params: {id: props.item.id}}">
-              <v-icon>edit</v-icon>
-            </v-btn>
-          </v-tooltip>
-        </td>
-      </template>
+        <template slot="items" slot-scope="props">
+            <td>{{ props.item.name }}</td>
+            <td>{{ props.item.email }}</td>
+            <td>{{ props.item.full_name }}</td>
+            <td><v-icon v-if="props.item.is_active">checkmark</v-icon></td>
+            <td><v-icon v-if="props.item.is_researcher">checkmark</v-icon></td>
+            <td><v-icon v-if="props.item.is_superuser">checkmark</v-icon></td>
+            <td class="justify-center layout px-0">
+                <v-tooltip top>
+                    <span>Edit</span>
+                    <v-btn slot="activator" flat :to="{name: 'main-admin-users-edit', params: {id: props.item.id}}">
+                        <v-icon>edit</v-icon>
+                    </v-btn>
+                </v-tooltip>
+            </td>
+        </template>
     </v-data-table>
   </div>
 </template>
@@ -61,6 +62,12 @@ export default class AdminUsers extends Vue {
       value: 'isActive',
       align: 'left',
     },
+    {
+          text: 'Is Researcher',
+          sortable: true,
+          value: 'isResearcher',
+          align: 'left',
+      },
     {
       text: 'Is Superuser',
       sortable: true,
