@@ -50,7 +50,7 @@ def search_charts(
 
 
 @router.post("/charts/search/ids", tags=["charts"], response_model=List[int])
-def search_charts(
+def search_charts_ids(
         db: Session = Depends(get_db),
         search_params: SearchParams = None,
         current_user: DBUser = Depends(get_current_active_researcher),
