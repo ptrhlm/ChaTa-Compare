@@ -25,7 +25,7 @@ def create(db_session, *, charts_in: List[ChartInDB]) -> List[Chart]:
 def search(db_session, *, q: str, chart_types: Optional[List[ChartType]]) -> List[Chart]:
     query = db_session.query(Chart)
     if chart_types:
-        query = query.filter(Chart.type.in_(chart_types))
+        query = query.filter(Chart.type.contains(chart_types))
     if q:
         query = db_search(query, q, sort=True)
 

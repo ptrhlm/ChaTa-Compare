@@ -84,7 +84,7 @@ def main():
                 image = f.read()
 
             charts.append({
-                "type": type_map[anno['type']],
+                "type": [type_map[anno['type']]],
                 "file_name": anno['type'] + '_' + str(anno['file']) + '.png',
                 "file_contents": base64.b64encode(image).decode(),
                 "mimetype": 'image/png',

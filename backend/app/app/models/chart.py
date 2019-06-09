@@ -22,7 +22,7 @@ class ChartType(str, Enum):
 
 
 class ChartBase(BaseModel):
-    type: ChartType
+    type: List[ChartType]
     title: Optional[str]
     x_axis_title: Optional[str]
     y_axis_title: Optional[str]
