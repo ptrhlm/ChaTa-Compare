@@ -140,8 +140,6 @@
 
                                 <v-layout row align-content-space-between justify-space-between wrap>
                                     <v-flex row>
-                                        <div class="subheading secondary--text text--lighten-2">Chart types</div>
-
                                         <v-layout row wrap>
                                             <v-autocomplete
                                                     v-model="searchedChartTypes"
@@ -153,7 +151,7 @@
                                                     return-object
                                                     deletable-chips
                                                     type="text"
-                                                    label="Chips"
+                                                    label="Chart types"
                                                     multiple
                                             >
                                             </v-autocomplete>
