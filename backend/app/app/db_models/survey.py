@@ -1,9 +1,10 @@
-from sqlalchemy import (Boolean, Column, Enum, Float, ForeignKey, Integer,
-                        String)
+from sqlalchemy import (Boolean, Column, DateTime, Enum, Float, ForeignKey,
+                        Integer, String, func)
 from sqlalchemy.orm import relationship
 
 from app.db.base_class import Base
-from app.db_models.associations import survey_user_association, chart_survey_association
+from app.db_models.associations import (chart_survey_association,
+                                        survey_user_association)
 from app.models.survey import SurveyStatus, SurveyType
 
 
@@ -13,6 +14,8 @@ class Survey(Base):
     description = Column(String(4000))
     status = Column(Enum(SurveyStatus), index=True, default=SurveyStatus.OPEN)
     type = Column(Enum(SurveyType), index=True)
+    created = Column(DateTime, server_default=func.now())
+    deadline = Column(DateTime)
     charts = relationship('Chart',
                           secondary=chart_survey_association,
                           backref='surveys')

@@ -1,4 +1,5 @@
 from typing import Optional
+from datetime import datetime
 
 from pydantic import BaseModel
 
@@ -13,3 +14,4 @@ class Answer(BaseModel):
     # Only one of these is present at time
     decision: Optional[int]
     score: Optional[int]
+    created: datetime

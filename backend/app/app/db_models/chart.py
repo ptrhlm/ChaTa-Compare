@@ -1,8 +1,8 @@
-from sqlalchemy import Column, Integer, String, Enum
+from sqlalchemy import Column, DateTime, Enum, Integer, String, func
 from sqlalchemy_utils import TSVectorType
 
-from app.db.utils import ArrayOfEnum
 from app.db.base_class import Base
+from app.db.utils import ArrayOfEnum
 from app.models.chart import ChartType
 
 
@@ -17,3 +17,4 @@ class Chart(Base):
     description = Column(String(4000), index=True)
     search_vector = Column(
         TSVectorType('title', 'x_axis_title', 'y_axis_title', 'description'))
+    created = Column(DateTime, server_default=func.now())

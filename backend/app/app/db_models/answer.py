@@ -1,6 +1,7 @@
-from app.db.base_class import Base
-from sqlalchemy import Column, Integer, ForeignKey
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, func
 from sqlalchemy.orm import relationship
+
+from app.db.base_class import Base
 
 
 class Answer(Base):
@@ -14,3 +15,4 @@ class Answer(Base):
     score = Column(Integer)
     user_id = Column(Integer, ForeignKey('user.id'), index=True)
     user = relationship('User', backref='answers')
+    created = Column(DateTime, server_default=func.now())

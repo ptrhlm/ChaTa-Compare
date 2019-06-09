@@ -1,4 +1,5 @@
 from enum import Enum
+from datetime import datetime
 from typing import Optional, List
 
 from pydantic import BaseModel
@@ -32,6 +33,7 @@ class ChartBase(BaseModel):
 class ChartInDB(ChartBase):
     file_hash: str
     file_ext: str
+    created: datetime
 
 
 class ChartInCreate(ChartBase):
@@ -42,6 +44,7 @@ class ChartInCreate(ChartBase):
 
 class Chart(ChartBase):
     file_path: str
+    created: datetime
 
 
 class SearchParams(BaseModel):

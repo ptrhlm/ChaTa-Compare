@@ -1,6 +1,7 @@
-from app.db.base_class import Base
-from sqlalchemy import Column, Integer, ForeignKey
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, func
 from sqlalchemy.orm import relationship
+
+from app.db.base_class import Base
 
 
 class Task(Base):
@@ -11,3 +12,4 @@ class Task(Base):
     chart2 = relationship('Chart', backref='tasks', foreign_keys=[chart2_id])
     survey_id = Column(Integer, ForeignKey('survey.id'), index=True)
     survey = relationship('Survey', backref='tasks_chart_2')
+    created = Column(DateTime, server_default=func.now())
