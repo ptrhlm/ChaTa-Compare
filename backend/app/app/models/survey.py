@@ -37,14 +37,23 @@ class Survey(SurveyBaseInDB):
     pass
 
 
+class Ranking(BaseModel):
+    pass  # TODO
+
+
 class SurveySummary(BaseModel):
     id: int
     name: str
     answers: int
     finished_tasks: int
     active_users: int
-    end_date: date
+    # end_date: date
     status: SurveyStatus
+
+
+class SurveyStatistics(BaseModel):
+    survey: Survey
+    ranking: Ranking
 
 
 class SurveyParticipant(BaseModel):

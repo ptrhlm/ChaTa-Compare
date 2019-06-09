@@ -6,9 +6,9 @@ from app.api.utils.db import get_db
 from app.api.utils.security import (get_current_active_researcher,
                                     get_current_active_user)
 from app.db_models.user import User
-from app.models.survey import (SurveyInCreate, Survey,
-                               SurveyParticipant, SurveyStatus, SurveySummary,
-                               CurrentSurvey, SurveyDetails, SurveyParticipantIds)
+from app.models.survey import (SurveyInCreate, Survey, SurveyParticipant,
+                               SurveyStatus, SurveySummary, CurrentSurvey,
+                               SurveyDetails, SurveyParticipantIds)
 from fastapi import APIRouter, Depends, HTTPException, Path, Query
 from sqlalchemy.orm import Session
 
@@ -106,10 +106,11 @@ async def list_current_surveys(
     for survey in surveys:
         criteria = crud.survey.get_criteria(db, survey_id=survey.id)
         for criterion in criteria:
-            current_surveys.append(CurrentSurvey(id=survey.id,
-                                                 name=survey.name,
-                                                 criterion_id=criterion.id,
-                                                 criterion=criterion.name))
+            current_surveys.append(
+                CurrentSurvey(id=survey.id,
+                              name=survey.name,
+                              criterion_id=criterion.id,
+                              criterion=criterion.name))
     return current_surveys
 
 
@@ -125,54 +126,43 @@ async def survey_details(
     survey = crud.survey.get(db, survey_id=survey_id)
     criterion = crud.survey.get_criterion(db, criterion_id=criterion_id)
     charts_count = crud.survey.get_charts_count(db, survey=survey)
-    current_user_participant = crud.survey.is_participant(db, survey_id=survey_id, user=current_user)
-    details = SurveyDetails(name=survey.name,
-                            description=survey.description,
-                            criterion=criterion.name,
-                            type=survey.type,
-                            data_characteristics=["Charts count: " + str(charts_count)],
-                            current_user_participant=current_user_participant)
+    current_user_participant = crud.survey.is_participant(db,
+                                                          survey_id=survey_id,
+                                                          user=current_user)
+    details = SurveyDetails(
+        name=survey.name,
+        description=survey.description,
+        criterion=criterion.name,
+        type=survey.type,
+        data_characteristics=["Charts count: " + str(charts_count)],
+        current_user_participant=current_user_participant)
     return details
+
+
+@router.get("/surveys/{id}/summary",
+            tags=["survey"],
+            response_model=SurveySummary)
+async def survey_summary(
+        id: int,
+        db: Session = Depends(get_db),
+        current_user: User = Depends(get_current_active_user)):
+    surveys = crud.survey.get_summary(db, id=id, user=current_user)
+    return surveys
 
 
 @router.get("/surveys/summary",
             tags=["survey"],
-            response_model=List[SurveySummary])
+            response_model=List[SurveySummary]
+)
 async def list_survey_summaries(
-        userId: int = None,
         skip: int = Query(0, ge=0),
         limit: int = Query(100, gt=0, le=1000),
         db: Session = Depends(get_db),
         current_user: User = Depends(get_current_active_user)):
-    surveys = [
-        SurveySummary(
-            id=1,
-            name='Survey 1',
-            answers=12,
-            finished_tasks=4,
-            active_users=5,
-            end_date=date(2019, 5, 5),
-            status=SurveyStatus.OPEN,
-        ),
-        SurveySummary(
-            id=2,
-            name='Survey 2',
-            answers=120,
-            finished_tasks=44,
-            active_users=15,
-            end_date=date(2018, 2, 1),
-            status=SurveyStatus.OPEN,
-        ),
-        SurveySummary(
-            id=3,
-            name='Survey 3',
-            answers=60,
-            finished_tasks=20,
-            active_users=8,
-            end_date=date(2019, 3, 12),
-            status=SurveyStatus.CLOSED,
-        ),
-    ]
+    surveys = crud.survey.get_summary_multi(db,
+                                            skip=skip,
+                                            limit=limit,
+                                            user=current_user)
     return surveys
 
 

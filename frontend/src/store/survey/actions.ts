@@ -30,7 +30,7 @@ export const actions = {
     },
     async actionGetSurveySummaries(context: MainContext, payload: { userId: number }) {
         try {
-            const response = await api.getSurveySummaries(context.rootState.main.token, payload.userId);
+            const response = await api.getSurveySummaries(context.rootState.main.token);
             if (response) {
                 return response.data
             }
