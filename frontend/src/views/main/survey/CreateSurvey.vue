@@ -83,7 +83,7 @@
                                     </v-btn>
                                 </v-layout>
 
-                                <v-layout row>
+                                <v-layout row style="margin-bottom:15px">
                                     <ul>
                                         <li v-for="criterion in criteria">{{ criterion }}</li>
                                     </ul>
@@ -123,69 +123,52 @@
 
 
                                 <v-layout row align-content-space-between justify-space-between>
-                                    <v-flex column xs12 sm6 md8>
+                                    <v-flex row>
                                         <div class="subheading secondary--text text--lighten-2">Survey name</div>
                                         <h2>{{ name }}</h2>
 
                                         <v-flex xs12 sm6 md12>
-                                            <v-text-field
-                                                    label="Search"
-                                                    v-model="chartSearchQuery"
-                                            ></v-text-field>
-                                            <v-btn
-                                                    @click="searchCharts"
-                                                    color="primary"
-                                            >Search
-                                            </v-btn>
-                                        </v-flex>
-                                    </v-flex>
-
-                                    <v-flex column xs12 sm6 md3>
-                                        <div class="subheading secondary--text text--lighten-2">Chart types</div>
-                                        <h2>{{ name }}</h2>
-
-                                        <v-flex xs12 sm6 md12>
-                                            <v-checkbox
-                                                    v-for="chartType in chartTypes"
-                                                    v-model="chartType.selected"
-                                                    :label="chartType.displayName"
-                                                    :key="chartType.name"
-                                                    class="ma-0 pa-0"
-                                            >
-                                            </v-checkbox>
+                                            <v-text-field label="Search"
+                                                          v-model="chartSearchQuery">
+                                            </v-text-field>
                                         </v-flex>
                                     </v-flex>
                                 </v-layout>
 
+                                <v-layout row align-content-space-between justify-space-between wrap>
+                                    <v-flex row>
+                                        <div class="subheading secondary--text text--lighten-2">Chart types</div>
+
+                                        <v-layout row wrap>
+                                            <div v-for="chartType in chartTypes" :key="chartType.name" style="margin-right:10px">
+                                                <v-checkbox v-model="chartType.selected"
+                                                            :label="chartType.displayName">
+                                                </v-checkbox>
+                                            </div>
+                                        </v-layout>
+                                    </v-flex>
+                                </v-layout>
+
+                                <v-btn @click="searchCharts"
+                                       color="primary"
+                                       style="margin-bottom: 20px">
+                                    Search
+                                </v-btn>
+
                                 <v-layout column align-content-space-between justify-space-between>
 
-                                    <v-flex xs12 sm6>
-                                        <v-card>
+                                    <v-flex row xs12 sm6>
+                                        <v-card style="margin-bottom: 10px">
                                             <v-container grid-list-sm fluid>
                                                 <v-layout row wrap>
-                                                    <v-flex
-                                                            v-for="chartUrl in chartUrls"
+                                                    <v-flex v-for="chartUrl in chartUrls"
                                                             xs
-                                                            d-flex
-                                                    >
+                                                            d-flex>
                                                         <v-card flat tile class="d-flex">
-                                                            <v-img
-                                                                    :src="chartUrl"
-                                                                    :lazy-src="`https://picsum.photos/10/6?image=10`"
-                                                                    aspect-ratio="1"
-                                                                    class="grey lighten-2"
-                                                            >
-                                                                <template v-slot:placeholder>
-                                                                    <v-layout
-                                                                            fill-height
-                                                                            align-center
-                                                                            justify-center
-                                                                            ma-0
-                                                                    >
-                                                                        <v-progress-circular indeterminate
-                                                                                             color="grey lighten-5"></v-progress-circular>
-                                                                    </v-layout>
-                                                                </template>
+                                                            <v-img :src="chartUrl"
+                                                                   :lazy-src="`https://picsum.photos/10/6?image=10`"
+                                                                   aspect-ratio="1"
+                                                                   class="grey lighten-2">
                                                             </v-img>
                                                         </v-card>
                                                     </v-flex>
@@ -194,18 +177,21 @@
                                         </v-card>
                                     </v-flex>
 
-                                    <v-text-field
-                                            label="Use in survey"
-                                            v-model="numberOfSelectedCharts"
-                                    ></v-text-field>
-                                    of {{ numberOfCharts }}
+                                    <div style="display:flex">
+                                        <v-text-field label="Use in survey"
+                                                      v-model="numberOfSelectedCharts"
+                                                      type="number"
+                                                      style="max-width: 200px">
+                                        </v-text-field>
+                                        <div style="align-content: space-around;display: grid;padding-top: 15px;margin-left:10px;">
+                                            <p>of {{ numberOfCharts }} charts</p>
+                                        </div>
+                                    </div>
                                 </v-layout>
 
 
-                                <v-btn
-                                        color="primary"
-                                        @click="navigateToMySurveys()"
-                                >
+                                <v-btn color="primary"
+                                       @click="navigateToMySurveys()">
                                     Next
                                 </v-btn>
 
