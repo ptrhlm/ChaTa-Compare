@@ -1,3 +1,9 @@
+<style scoped>
+.selectable {
+  cursor: pointer;
+}
+</style>
+
 <template>
     <v-container fluid>
         <v-card class="ma-3 pa-3" v-if="task">
@@ -7,14 +13,28 @@
             <v-container fluid>
                 <v-layout justify-space-around>
                     <v-flex xs5>
-                        <v-layout column>
-                            <v-img :src="task.chart1.file_path" aspect-ratio="1.7"></v-img>
-                        </v-layout>
+                        <v-hover>
+                            <v-layout column
+                                      class="selectable"
+                                      v-ripple
+                                      @click="answerComparision = 1; nextTask();"
+                                      slot-scope="{ hover }"
+                                      :class="`elevation-${hover ? 20 : 2}`">
+                                <v-img :src="task.chart1.file_path" max-height="maxChartHeight"></v-img>
+                            </v-layout>
+                        </v-hover>
                     </v-flex>
                     <v-flex xs5>
-                        <v-layout column>
-                            <v-img :src="task.chart2.file_path" aspect-ratio="1.7"></v-img>
-                        </v-layout>
+                        <v-hover>
+                            <v-layout column
+                                      class="selectable"
+                                      v-ripple
+                                      @click="answerComparision = 2; nextTask();"
+                                      slot-scope="{ hover }"
+                                      :class="`elevation-${hover ? 20 : 2}`">
+                                <v-img :src="task.chart2.file_path" max-height="maxChartHeight"></v-img>
+                            </v-layout>
+                        </v-hover>
                     </v-flex>
                 </v-layout>
             </v-container>
@@ -58,6 +78,7 @@
             { name: 'Left', value: 1},
             { name:'Right', value: 2}
         ];
+        readonly maxChartHeight = 800;
 
         public async created(): Promise<void> {
             await this.getNextTask();
