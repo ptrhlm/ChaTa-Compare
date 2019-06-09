@@ -2,7 +2,7 @@
     <v-container fluid>
         <v-card class="ma-3 pa-3" v-if="task">
             <v-card-title primary-title>
-                <div class="headline primary--text">Czytelność wykresów dot. medycyny</div>
+                <div class="headline primary--text">{{ task.survey.name }}</div>
             </v-card-title>
             <v-container fluid>
                 <v-layout justify-space-around>
@@ -22,7 +22,7 @@
                 <span class="mr-2">{{ task.criterion }} ({{ answerSingle }})</span>
                 <v-rating v-model="answerSingle" hover length="10" large></v-rating>
             </v-container>
-            <v-container v-else>
+            <v-container v-else class="title primary--text">
                 {{ task.criterion }}
                 <v-radio-group row>
                     <v-radio-group v-model="answerComparision" row>

@@ -2,7 +2,7 @@
     <div>
         <v-toolbar>
             <v-toolbar-title>
-                Moje badania
+                My surveys
             </v-toolbar-title>
         </v-toolbar>
         <v-data-table :headers="headers" :items="surveys">
