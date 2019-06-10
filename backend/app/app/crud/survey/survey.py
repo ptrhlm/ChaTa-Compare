@@ -61,18 +61,6 @@ def create(db_session, *, survey_in: SurveyInCreate,
     db_session.commit()
     db_session.refresh(survey)
 
-    survey_id = survey.id
-    db_session.execute(
-        Task.__table__.insert(),
-        [{
-            "survey_id": survey_id,
-            "chart1_id": chart1_id,
-            "chart2_id": chart2_id
-        } for chart1_id in survey_in.charts_ids
-         for chart2_id in survey_in.charts_ids if chart1_id < chart2_id
-         ])  # Yeah, it's quadratic. Choose your data structures better, kids
-    db_session.commit()
-    db_session.refresh(survey)
     return survey
 
 
@@ -86,4 +74,5 @@ def close(db_session, *, survey: Survey) -> Survey:
 
 def save_report(db_session, *, survey_id: int, task_id: int,
                 user: User) -> None:
+    "Intended for reporting bad charts."
     raise NotImplementedError()  # TODO: later

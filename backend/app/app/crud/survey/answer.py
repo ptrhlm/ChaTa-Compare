@@ -15,6 +15,7 @@ from app.models.survey import SurveyInCreate, SurveyStatus, SurveySummary
 
 def save_answer(db_session, *, task_id: int, score: Optional[int],
                 chosen_chart: Optional[int], user: User) -> None:
+    # TODO
     answer = Answer(task_id=task_id,
                     score=score,
                     chosen_chart=chosen_chart,
