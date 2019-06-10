@@ -22,15 +22,15 @@ def create(db_session, *, charts_in: List[ChartInDB]) -> List[Chart]:
     return charts
 
 
-def search(db_session, *, q: str, chart_types: Optional[List[ChartType]]) -> List[Chart]:
+def search(db_session, *, q: Optional[str], chart_types: Optional[List[ChartType]]) -> List[Chart]:
     query = db_session.query(Chart)
     if chart_types:
         query = query.filter(Chart.type.contains(chart_types))
     if q:
         query = db_search(query, q, sort=True)
 
-    return query
+    return query  # type: ignore
 
 
 def get(db_session, *, chart_id: int) -> Optional[Chart]:
-    return db_session.query(Chart).filter(Chart.id == chart_id).first()
+    return db_session.query(Chart).filter(Chart.id == chart_id).first()  # type: ignore

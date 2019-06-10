@@ -8,11 +8,11 @@ from app.models.user import UserInCreate, UserInUpdate
 
 
 def get(db_session, *, user_id: int) -> Optional[User]:
-    return db_session.query(User).filter(User.id == user_id).first()
+    return db_session.query(User).filter(User.id == user_id).first()  # type: ignore
 
 
 def get_by_email(db_session, *, email: str) -> Optional[User]:
-    return db_session.query(User).filter(User.email == email).first()
+    return db_session.query(User).filter(User.email == email).first()  # type: ignore
 
 
 def authenticate(db_session, *, email: str, password: str) -> Optional[User]:
@@ -24,20 +24,20 @@ def authenticate(db_session, *, email: str, password: str) -> Optional[User]:
     return user
 
 
-def is_active(user) -> bool:
-    return user.is_active
+def is_active(user: User) -> bool:
+    return user.is_active or False
 
 
-def is_superuser(user) -> bool:
-    return user.is_superuser
+def is_superuser(user: User) -> bool:
+    return user.is_superuser or False
 
 
-def is_researcher(user) -> bool:
-    return user.is_researcher
+def is_researcher(user: User) -> bool:
+    return user.is_researcher or False
 
 
 def get_multi(db_session, *, skip=0, limit=100) -> List[Optional[User]]:
-    return db_session.query(User).offset(skip).limit(limit).all()
+    return db_session.query(User).offset(skip).limit(limit).all()  # type: ignore
 
 
 def create(db_session, *, user_in: UserInCreate) -> User:

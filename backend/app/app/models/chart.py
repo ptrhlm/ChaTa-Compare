@@ -48,5 +48,5 @@ class Chart(ChartBase):
 
 
 class SearchParams(BaseModel):
-    q: str = None
+    q: Optional[str] = None
     chart_types: Optional[List[ChartType]] = None

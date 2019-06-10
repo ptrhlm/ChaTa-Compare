@@ -38,8 +38,8 @@ def db_chart_to_model_chart(db_chart):
 
 @router.post("/charts/search", tags=["charts"], response_model=List[Chart])
 def search_charts(
+        search_params: SearchParams,
         db: Session = Depends(get_db),
-        search_params: SearchParams = None,
         current_user: DBUser = Depends(get_current_active_researcher),
 ):
     """Search charts"""
@@ -51,8 +51,8 @@ def search_charts(
 
 @router.post("/charts/search/ids", tags=["charts"], response_model=List[int])
 def search_charts_ids(
+        search_params: SearchParams,
         db: Session = Depends(get_db),
-        search_params: SearchParams = None,
         current_user: DBUser = Depends(get_current_active_researcher),
 ):
     """Search charts. Returns IDs"""
@@ -102,11 +102,11 @@ async def create_chart(
         file_hash = m.hexdigest()
         content_type = chart.mimetype
 
-        chart = chart.dict(exclude={'file_name', 'file_contents'})
-        chart["file_ext"] = file_ext
-        chart["file_hash"] = file_hash
-        chart = ChartInDB(**chart)
-        charts_db.append(chart)
+        chart_ = chart.dict(exclude={'file_name', 'file_contents'})
+        chart_["file_ext"] = file_ext
+        chart_["file_hash"] = file_hash
+        chart_db = ChartInDB(**chart_)
+        charts_db.append(chart_db)
 
         file_io = io.BytesIO(file_contents)
         try:

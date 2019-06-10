@@ -38,6 +38,11 @@ async def add_charts_to_survey(
             detail="Received empty list",
         )
     survey = crud.survey.get(db, survey_id=id)
+    if not survey:
+        raise HTTPException(
+            status_code=404,
+            detail="Survey not found"
+        )
     if survey.researcher != current_user and crud.user.is_superuser(
             current_user):
         raise HTTPException(
@@ -66,6 +71,11 @@ async def remove_charts_from_survey(
             detail="Received empty list",
         )
     survey = crud.survey.get(db, survey_id=id)
+    if not survey:
+        raise HTTPException(
+            status_code=404,
+            detail="Survey not found"
+        )
     if survey.researcher != current_user and crud.user.is_superuser(
             current_user):
         raise HTTPException(
@@ -172,6 +182,11 @@ async def close_survey(id: int,
                        current_user: User = Depends(get_current_active_user)):
     """Close survey"""
     survey = crud.survey.get(db, survey_id=id)
+    if not survey:
+        raise HTTPException(
+            status_code=404,
+            detail="Survey not found"
+        )
     if survey.researcher != current_user and crud.user.is_superuser(
             current_user):
         raise HTTPException(
@@ -197,6 +212,11 @@ def list_participants(id: int,
                       current_user: User = Depends(get_current_active_user)):
     """List all participants"""
     survey = crud.survey.get(db, survey_id=id)
+    if not survey:
+        raise HTTPException(
+            status_code=404,
+            detail="Survey not found"
+        )
     if survey.researcher != current_user and crud.user.is_superuser(
             current_user):
         raise HTTPException(
@@ -225,6 +245,11 @@ async def add_participants(
             detail="Received empty list",
         )
     survey = crud.survey.get(db, survey_id=id)
+    if not survey:
+        raise HTTPException(
+            status_code=404,
+            detail="Survey not found"
+        )
     if survey.researcher != current_user and crud.user.is_superuser(
             current_user):
         raise HTTPException(
@@ -257,6 +282,11 @@ async def remove_participants(
             detail="Received empty list",
         )
     survey = crud.survey.get(db, survey_id=id)
+    if not survey:
+        raise HTTPException(
+            status_code=404,
+            detail="Survey not found"
+        )
     if survey.researcher != current_user and crud.user.is_superuser(
             current_user):
         raise HTTPException(

@@ -4,6 +4,7 @@ from typing import Optional
 from pydantic import BaseModel
 from app.core import config
 
+
 class RemoteUser(BaseModel):
     id: int
     username: str
@@ -29,5 +30,6 @@ def remote_authenticate(username: str, password: str) -> Optional[RemoteUser]:
     user = response.json()
     if response.status_code == 200:
         user = RemoteUser(**user)
-        return user
-    return None
+        return user  # type: ignore
+    else:
+        return None
