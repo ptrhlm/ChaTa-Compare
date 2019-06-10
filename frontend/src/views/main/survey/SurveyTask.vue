@@ -11,9 +11,6 @@
                 <div class="headline primary--text">{{ task.survey.name }}</div>
             </v-card-title>
             <v-container fluid>
-                <v-layout align-center justify-center row mb-2>
-                    <h1>{{ task.criterion }}</h1>
-                </v-layout>
                 <v-layout justify-space-around>
                     <v-flex xs5>
                         <v-hover>
@@ -42,11 +39,10 @@
                 </v-layout>
             </v-container>
             <v-container v-if="task.survey.type === 'single'">
-                <span class="mr-2">{{ task.criterion }} ({{ answerSingle }})</span>
+                <span class="mr-2">{{ answerSingle }}</span>
                 <v-rating v-model="answerSingle" hover length="10" large></v-rating>
             </v-container>
             <v-container v-else class="title primary--text">
-                {{ task.criterion }}
                 <v-radio-group row>
                     <v-radio-group v-model="answerComparision" row>
                         <v-radio
@@ -88,7 +84,7 @@
         }
 
         public async getNextTask(): Promise<void> {
-            this.task = await dispatchGetNextTask(this.$store, { surveyId: this.surveyId, criterionId: this.criterionId });
+            this.task = await dispatchGetNextTask(this.$store, { surveyId: this.surveyId });
         }
 
         public async nextTask(): Promise<void> {
@@ -102,7 +98,7 @@
 
         private async saveAnswer(task: ITask) {
             const answer : IAnswer = { id: null, decision:this.answerComparision, score: this.answerSingle };
-            const payload = { surveyId: this.surveyId, criterionId: this.criterionId, taskId: task.id, data: answer };
+            const payload = { surveyId: this.surveyId, taskId: task.id, data: answer };
             await dispatchSaveAnswer(this.$store, payload);
         }
 
@@ -110,8 +106,5 @@
             return +this.$router.currentRoute.params.surveyId;
         }
 
-        get criterionId(): number {
-            return +this.$router.currentRoute.params.criterionId;
-        }
     }
 </script>

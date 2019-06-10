@@ -11,5 +11,4 @@ class Task(BaseModel):
     chart1: Chart
     chart2: Chart
     survey: Survey
-    criterion: str
     created: datetime

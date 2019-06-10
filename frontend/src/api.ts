@@ -61,18 +61,18 @@ export const api = {
   async getCurrentSurveys(token: string) {
     return axios.get<ICurrentSurvey[]>(`${apiUrl}/api/v1/surveys/current`, authHeaders(token));
   },
-  async getSurveyDetails(token: string, surveyId: number, criterionId: number) {
-    return axios.get<ISurveyDetails>(`${apiUrl}/api/v1/surveys/${surveyId}/${criterionId}/details`, authHeaders(token));
+  async getSurveyDetails(token: string, surveyId: number) {
+    return axios.get<ISurveyDetails>(`${apiUrl}/api/v1/surveys/${surveyId}/details`, authHeaders(token));
   },
   async joinSurvey(token: string, surveyId: number, userId: number) {
     const data = { participant_ids: [userId] };
     return axios.post(`${apiUrl}/api/v1/surveys/${surveyId}/participants`, data, authHeaders(token));
   },
-  async getNextTask(token: string, surveyId: number, criterionId: number) {
-    return axios.get<ITask>(`${apiUrl}/api/v1/surveys/${surveyId}/${criterionId}/tasks/next`, authHeaders(token));
+  async getNextTask(token: string, surveyId: number) {
+    return axios.get<ITask>(`${apiUrl}/api/v1/surveys/${surveyId}/tasks/next`, authHeaders(token));
   },
-  async saveAnswer(token: string, surveyId: number, criterionId: number, taskId: number, data: IAnswer) {
-    return axios.post(`${apiUrl}/api/v1/surveys/${surveyId}/${criterionId}/tasks/${taskId}/answers`, data,
+  async saveAnswer(token: string, surveyId: number, taskId: number, data: IAnswer) {
+    return axios.post(`${apiUrl}/api/v1/surveys/${surveyId}/tasks/${taskId}/answers`, data,
         authHeaders(token));
   },
 };

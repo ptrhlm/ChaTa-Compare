@@ -12,8 +12,6 @@
                     {{ survey.description }}<br/><br/>
                     <!--<div class="subheading secondary--text text--lighten-2">Planned end date</div>
                     {{ survey.plannedEndDate }}<br/><br/>-->
-                    <div class="subheading secondary--text text--lighten-2">Criterion</div>
-                    {{survey.criterion}}
                     <br/><br/>
                          <div class="subheading secondary--text text--lighten-2">Charts assessment method</div>
                     {{ survey.type }}<br/><br/>
@@ -50,7 +48,6 @@
         public survey: ISurveyDetails = {
             name: '',
             description: '',
-            criterion: '',
             type: ESurveyType.Comparison,
             data_characteristics: [],
             current_user_participant: null,
@@ -58,7 +55,7 @@
 
         public async created() {
             const response = await dispatchGetSurveyDetails(this.$store,
-                { surveyId: this.surveyId, criterionId: this.criterionId });
+                { surveyId: this.surveyId });
             if (response) {
                 this.survey = response;
             }
@@ -70,16 +67,12 @@
             }
             this.$router.push({
                 name: 'main-surveys-task',
-                params: { surveyId: this.surveyId + '', criterionId: this.criterionId + '' }
+                params: { surveyId: this.surveyId + '' }
             });
         }
 
         get surveyId() {
             return +this.$router.currentRoute.params.surveyId;
-        }
-
-        get criterionId() {
-            return +this.$router.currentRoute.params.criterionId;
         }
 
         get userProfile(): IUserProfile {

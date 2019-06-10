@@ -77,17 +77,6 @@
                                         </v-flex>
                                     </v-layout>
 
-                                    <v-layout align-center justify-start row fill-height>
-                                        <v-text-field
-                                                label="Criterion"
-                                                placeholder="Criterion"
-                                                v-model="criterion"
-                                                v-validate="{required: true}"
-                                                data-vv-name="criterion"
-                                                :error-messages="errors.collect('criterion')"
-                                        ></v-text-field>
-                                    </v-layout>
-
                                     <v-spacer></v-spacer>
 
                                     <v-layout column>
@@ -268,8 +257,6 @@
         public description: string = '';
         public menu: boolean = false;
         public date: string = new Date().toISOString().substr(0, 10);
-        public criterion: string = '';
-        public criteria: any[] = [];
         public type: ESurveyType = ESurveyType.Comparison;
         public answersPerTask: number = 5;
         private page = 0;
@@ -303,7 +290,6 @@
                 description: this.description,
                 status: ESurveyStatus.Open,
                 type: this.type,
-                criteria: [this.criterion],
                 charts_ids: this.chartIds.slice(0, Math.min(this.numberOfCharts, this.numberOfSelectedCharts)),
                 answers_per_task: this.answersPerTask,
                 tasks_per_chart: 3,

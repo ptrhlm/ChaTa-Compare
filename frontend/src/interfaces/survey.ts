@@ -13,7 +13,6 @@ export interface ISurveyCreate {
     description: string;
     status: ESurveyStatus;
     type: ESurveyType;
-    criteria: string[];
     charts_ids: number[];
     answers_per_task: number;
     tasks_per_chart: number;
@@ -47,14 +46,11 @@ export interface ISurveySummary {
 export interface ICurrentSurvey {
     id: number;
     name: string;
-    criterion_id: string;
-    criterion: string;
 }
 
 export interface ISurveyDetails {
     name: string;
     description: string;
-    criterion: string;
     type: ESurveyType;
     data_characteristics: string[];
     current_user_participant: boolean | null;

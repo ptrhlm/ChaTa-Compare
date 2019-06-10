@@ -6,5 +6,4 @@ export interface ITask {
     chart1: IChart;
     chart2: IChart;
     survey: ISurvey;
-    criterion: string;
 }

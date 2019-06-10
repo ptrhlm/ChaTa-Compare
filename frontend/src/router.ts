@@ -104,13 +104,13 @@ export default new Router({
                       /* webpackChunkName: "main-surveys-current" */ './views/main/survey/CurrentSurveys.vue'),
                 },
                 {
-                  path: ':surveyId/:criterionId/details',
+                  path: ':surveyId/details',
                   name: 'main-surveys-details',
                   component: () => import(
                       /* webpackChunkName: "main-surveys-details" */ './views/main/survey/SurveyDetails.vue'),
                 },
                 {
-                  path: ':surveyId/:criterionId/task',
+                  path: ':surveyId/task',
                   name: 'main-surveys-task',
                   component: () => import(
                       /* webpackChunkName: "main-surveys-task" */ './views/main/survey/SurveyTask.vue'),

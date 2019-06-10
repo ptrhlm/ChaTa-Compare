@@ -73,7 +73,6 @@ class SurveyInCreate(BaseModel):
     description: str
     status: SurveyStatus
     type: SurveyType
-    criteria: List[str]
     charts_ids: List[int]
     answers_per_task: int
     tasks_per_chart: int
@@ -85,14 +84,11 @@ class SurveyInCreate(BaseModel):
 class CurrentSurvey(BaseModel):
     id: int
     name: str
-    criterion_id: int
-    criterion: str
 
 
 class SurveyDetails(BaseModel):
     name: str
     description: str
-    criterion: str
     type: SurveyType
     data_characteristics: List[str]
     current_user_participant: bool

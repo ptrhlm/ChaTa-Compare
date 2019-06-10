@@ -67,9 +67,9 @@ export const actions = {
             await dispatchCheckApiError(context, error);
         }
     },
-    async actionGetSurveyDetails(context: MainContext, payload: { surveyId: number, criterionId: number }) {
+    async actionGetSurveyDetails(context: MainContext, payload: { surveyId: number}) {
         try {
-            const response = await api.getSurveyDetails(context.rootState.main.token, payload.surveyId, payload.criterionId);
+            const response = await api.getSurveyDetails(context.rootState.main.token, payload.surveyId);
             if (response) {
                 return response.data;
             }
@@ -80,12 +80,12 @@ export const actions = {
     async actionJoinSurvey(context: MainContext, payload: { surveyId: number, userId: number }) {
         return await callApi(context, api.joinSurvey, payload.surveyId, payload.userId)
     },
-    async actionGetNextTask(context: MainContext, payload: { surveyId: number, criterionId: number }) {
-        return await callApi(context, api.getNextTask, payload.surveyId, payload.criterionId)
+    async actionGetNextTask(context: MainContext, payload: { surveyId: number}) {
+        return await callApi(context, api.getNextTask, payload.surveyId)
     },
     async actionSaveAnswer(context: MainContext,
-                           payload: { surveyId: number, criterionId: number, taskId: number, data: IAnswer }) {
-        await callApi(context, api.saveAnswer, payload.surveyId, payload.criterionId, payload.taskId, payload.data)
+                           payload: { surveyId: number, taskId: number, data: IAnswer }) {
+        await callApi(context, api.saveAnswer, payload.surveyId, payload.taskId, payload.data)
     },
 };
 

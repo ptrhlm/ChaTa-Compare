@@ -3,7 +3,6 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
-from app.models.criterion import Criterion
 from app.models.user import User
 from app.models.task import Task
 

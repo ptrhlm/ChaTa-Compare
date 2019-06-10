@@ -8,14 +8,13 @@
         <v-data-table :headers="headers" :items="surveys" item-key="">
             <template slot="items" slot-scope="props">
                 <td>{{ props.item.name }}</td>
-                <td>{{ props.item.criterion }}</td>
                 <td class="justify-center layout px-0">
                     <v-tooltip top>
                         <span>Weź udział</span>
                         <v-btn
                                 slot="activator"
                                 flat
-                                :to="{ name: 'main-surveys-details', params: createSurveyDetailsCriteria(props.item) }"
+                                :to="{ name: 'main-surveys-details', params: createSurveyDetails(props.item) }"
                         >
                             <v-icon>arrow_forward</v-icon>
                         </v-btn>
@@ -36,7 +35,6 @@ export default class CurrentSurveys extends Vue {
 
     public headers = [
         {value: "name", text: "Name"},
-        {value: "criterion", text: "Criterion"},
         {value: "join", text: ""}
     ];
 
@@ -49,8 +47,8 @@ export default class CurrentSurveys extends Vue {
         }
     }
 
-    public createSurveyDetailsCriteria(survey: ICurrentSurvey) {
-        return { surveyId: survey.id, criterionId: survey.criterion_id }
+    public createSurveyDetails(survey: ICurrentSurvey) {
+        return { surveyId: survey.id }
     }
 }
 </script>
