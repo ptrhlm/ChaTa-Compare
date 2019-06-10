@@ -51,34 +51,35 @@ def get_summary(db_session, *, id, user):
     active_users = db_session.query(Answer.user_id).join(Task).filter(
         Task.survey_id == id).distinct(Answer.user_id).count()
 
-    return SurveySummary(
-        id=survey.id,
-        name=survey.name,
-        answers=answers,
-        finished_tasks=finished_tasks,
-        active_users=active_users,
-        # end_date = None,  # TODO
-        status=survey.status)
+    return SurveySummary(id=survey.id,
+                         name=survey.name,
+                         answers=answers,
+                         finished_tasks=finished_tasks,
+                         active_users=active_users,
+                         end_date=survey.deadline,
+                         status=survey.status)
 
 
 def get_summary_multi(db_session, *, user, skip=0, limit=100):
-    surveys_of_user = db_session.query(Survey.id)\
-                                .filter((Survey.researcher_id == user.id)|(Survey.participants.any(id=user.id)))\
-                                .subquery()
+    surveys_of_user = db_session.query(
+        Survey.id
+    ).filter(
+        (Survey.researcher_id == user.id) | (Survey.participants.any(id=user.id))
+    ).subquery()
 
     answers = db_session.query(
         Task.survey_id,
-        func.count(Answer.id).label("answer_count"))\
-                        .join(Task)\
-                        .group_by(Task.survey_id)\
-                        .subquery()
+        func.count(Answer.id).label("answer_count")
+    ).join(Task)\
+     .group_by(Task.survey_id)\
+     .subquery()
 
     tasks = db_session.query(
         Task.id,
-        func.count(Answer.id).label("answers"))\
-                      .join(Task)\
-                      .group_by(Task.id)\
-                      .subquery()
+        func.count(Answer.id).label("answers")
+    ).join(Task)\
+     .group_by(Task.id)\
+     .subquery()
     answers_per_task = db_session.query(Survey.id,
                                         Survey.answers_per_task).subquery()
     finished_tasks = db_session.query(
@@ -92,15 +93,15 @@ def get_summary_multi(db_session, *, user, skip=0, limit=100):
 
     survey_users = db_session.query(
         Task.survey_id,
-        Answer.user_id)\
-                             .join(Task)\
-                             .distinct(Answer.user_id, Task.survey_id)\
-                             .subquery()
+        Answer.user_id
+    ).join(Task)\
+     .distinct(Answer.user_id, Task.survey_id)\
+     .subquery()
     active_users = db_session.query(
         survey_users.c.survey_id,
-        func.count(survey_users.c.user_id).label("active_users"))\
-                             .group_by(survey_users.c.survey_id)\
-                             .subquery()
+        func.count(survey_users.c.user_id).label("active_users")
+    ).group_by(survey_users.c.survey_id)\
+     .subquery()
 
     surveys = db_session.query(
         Survey.id,
@@ -108,6 +109,7 @@ def get_summary_multi(db_session, *, user, skip=0, limit=100):
         func.coalesce(answers.c.answer_count, 0).label("answers"),
         func.coalesce(finished_tasks.c.finished_tasks, 0).label("finished_tasks"),
         func.coalesce(active_users.c.active_users, 0).label("active_users"),
+        Survey.deadline.label("end_date"),
         Survey.status
     )\
         .filter(Survey.status == SurveyStatus.OPEN)\
