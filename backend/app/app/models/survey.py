@@ -4,6 +4,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel
 
+from app.models.chart import Chart
 from app.models.user import User
 
 
@@ -39,8 +40,14 @@ class Survey(SurveyBaseInDB):
     pass
 
 
+class RankingEntry(BaseModel):
+    chart: Chart
+    score: float
+
+
 class Ranking(BaseModel):
-    pass  # TODO
+    survey: Survey
+    ranking: List[RankingEntry]
 
 
 class SurveySummary(BaseModel):
@@ -49,7 +56,7 @@ class SurveySummary(BaseModel):
     answers: int
     finished_tasks: int
     active_users: int
-    end_date: datetime
+    end_date: Optional[datetime]
     status: SurveyStatus
 
 

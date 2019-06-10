@@ -9,8 +9,8 @@ from app.models.task import Task
 
 class Answer(BaseModel):
     id: Optional[int]
-
-    # Only one of these is present at time
-    decision: Optional[int]
+    task: Task
+    chosen_chart: Optional[int]
     score: Optional[int]
+    user: User
     created: datetime
