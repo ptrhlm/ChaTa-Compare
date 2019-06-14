@@ -29,6 +29,7 @@ async def get_next_task(survey_id: int,
         return Task(id=task.id,
                     chart1=db_chart_to_model_chart(task.chart1),
                     chart2=db_chart_to_model_chart(task.chart2),
+                    created=task.created,
                     survey=Survey(**task.survey.__dict__))
     else:
         raise HTTPException(

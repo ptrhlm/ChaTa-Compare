@@ -7,6 +7,7 @@ import argparse
 import base64
 import io
 from itertools import islice, chain
+import json
 
 from PIL import Image
 import requests
@@ -125,8 +126,12 @@ def compare_add_charts(host, token, charts):
                         json=charts,
                         headers={
                             "Authorization": "Bearer " + token
-                        }).json()
-    print(res)
+                        })
+    try:
+        return res.json()
+    except json.JSONDecodeError as e:
+        print(res, res.text)
+        raise e
 
 
 def batch(iterable, size: int):

@@ -1,7 +1,8 @@
 from typing import Any, List, Optional
 
 import trueskill
-from sqlalchemy import aliased, case, func, literal, tuple_
+from sqlalchemy import case, func, literal, tuple_, text
+from sqlalchemy.orm import aliased
 
 from app.crud.user import is_superuser
 from app.db_models.answer import Answer
@@ -70,7 +71,7 @@ def get_next_task(db_session, *, survey_id: int, user: User):
         .filter(Task.survey_id == survey_id)\
         .filter(func.coalesce(subquery.c.task_num, 0) < survey.answers_per_task)\
         .filter(func.coalesce(subquery.c.checked, 0) == 0)\
-        .order_by("RANDOM()")\
+        .order_by(text("RANDOM()"))\
         .first()
     # Chooses random available task. Let's hope this will limit collisions to minimum
     return task
@@ -95,25 +96,27 @@ def generate_new_tasks(db_session, *, survey: Survey) -> None:
                 Task.chart1_id.label("chart_id"), func.count('*').label("task1_count")
             )\
             .filter(Task.survey_id == survey.id)\
-            .group_by(Task.chart1_id)
+            .group_by(Task.chart1_id)\
+            .subquery()
         sub2 = db_session\
             .query(
                 Task.chart2_id.label("chart_id"), func.count('*').label("task2_count")
             )\
             .filter(Task.survey_id == survey.id)\
-            .group_by(Task.chart2_id)
+            .group_by(Task.chart2_id)\
+            .subquery()
         chart_task_count = db_session\
             .query(
                 chart_survey_association.c.chart_id.label("chart_id"),
-                (func.coalesce(sub1.task1_count, 0) + func.coalesce(sub1.task2_count, 0)).label("task_count")
+                (func.coalesce(sub1.c.task1_count, 0) + func.coalesce(sub2.c.task2_count, 0)).label("task_count")
             )\
             .filter(chart_survey_association.c.survey_id == survey.id)\
             .outerjoin(sub1, sub1.c.chart_id == chart_survey_association.c.chart_id)\
-            .outerjoin(sub2, sub1.c.chart_id == chart_survey_association.c.chart_id)\
+            .outerjoin(sub2, sub2.c.chart_id == chart_survey_association.c.chart_id)\
             .subquery()
         charts = db_session\
             .query(chart_task_count.c.chart_id.label("chart_id"))\
-            .filter(chart_task_count.c.count < survey.tasks_per_chart)\
+            .filter(chart_task_count.c.task_count < survey.tasks_per_chart)\
             .subquery()
 
         current_tasks = db_session\
@@ -124,22 +127,22 @@ def generate_new_tasks(db_session, *, survey: Survey) -> None:
             .filter(Task.survey_id == survey.id)\
             .subquery()
 
-        chart1 = aliased(Chart)
-        chart2 = aliased(Chart)
+        chart1 = aliased(chart_survey_association)
+        chart2 = aliased(chart_survey_association)
         task_candidates = db_session\
             .query(
-                charts.c.chart_id.label("chart1_id"),
+                chart1.c.chart_id.label("chart1_id"),
                 chart1.c.sigma.label("sigma1"),
                 chart1.c.mu.label("mu1"),
-                charts.c.chart_id.label("chart2_id"),
+                chart2.c.chart_id.label("chart2_id"),
                 chart2.c.sigma.label("sigma2"),
                 chart2.c.mu.label("mu2"),
             )\
-            .filter("chart1_id < chart2_id")\
-            .filter(tuple_("chart1_id", "chart2_id").notin_(current_tasks))\
-            .join(chart1, charts.c.chart_id == chart1.id)\
-            .join(chart2, charts.c.chart_id == chart2.id)\
-            .order_by("RANDOM()")\
+            .filter(chart1.c.chart_id < chart2.c.chart_id)\
+            .filter(tuple_(chart1.c.chart_id, chart2.c.chart_id).notin_(current_tasks))\
+            .filter(chart1.c.chart_id.in_(charts))\
+            .filter(chart2.c.chart_id.in_(charts))\
+            .order_by(text("RANDOM()"))\
             .limit(1000)\
             .all()
 

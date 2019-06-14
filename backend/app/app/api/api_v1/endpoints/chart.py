@@ -33,6 +33,7 @@ def db_chart_to_model_chart(db_chart):
         y_axis_title=db_chart.y_axis_title,
         description=db_chart.description,
         file_path=get_url(db_chart.file_hash + db_chart.file_ext),
+        created=db_chart.created
     )
 
 
