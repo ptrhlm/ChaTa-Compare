@@ -1,7 +1,8 @@
 from typing import Any, List, Optional
 
 import trueskill
-from sqlalchemy import aliased, case, func, literal, tuple_
+from sqlalchemy import case, func, literal, tuple_
+from sqlalchemy.orm import aliased
 
 from app.crud.user import is_superuser
 from app.db_models.answer import Answer
