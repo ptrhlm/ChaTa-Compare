@@ -33,16 +33,31 @@ After application finishes startup procedure following services will be availabl
 
 ## Deployment
 
-TODO
+1. Copy `docker-compose.yml` and all `.env` files.
 
-## Release History
+2. Tweak configuration and set secure secrets in `.env` files.
 
-* 0.0.1
-    * Work in progress
+3. Set a label on the node used for database:
+```bash
+docker node update --label-add app-db-data=true $HOSTNAME
+```
 
-## Acknowledgements
+4. Deploy with Docker:
+```bash
+docker-compose -f docker-compose.deploy.yml config > docker-stack.yml
+docker stack deploy -c docker-stack.yml compare
+```
 
-TODO
+4a. Sometimes there are problems with network setup. To fix them, create the network manually:
+```bash
+docker network create -d overlay traefik-public
+```
+
+5. To update after new release:
+```bash
+docker-compose pull
+docker stack deploy -c docker-stack.yml compare
+```
 
 ## Meta
 
